@@ -6,10 +6,11 @@ import (
 )
 
 type MT5Command struct {
-	Command    string
-	Encrypted  bool
-	Parameters map[string]interface{}
-	Body       string
+	Command         string
+	Encrypted       bool
+	Parameters      map[string]interface{}
+	Body            string
+	ResponseHasBody bool
 }
 
 func (c *MT5Command) toString() string {

@@ -5,33 +5,26 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
-
-	"github.com/sirupsen/logrus"
 )
 
-func (m *MT5) Auth() {
+func (m *MT5) Auth() error {
 	resAuthStart, err := m.sendAuthStart()
 	if err != nil {
-		logrus.Error(err)
-		return
+		return err
 	}
 	srvRand, found := resAuthStart.Parameters[PARAM_SRV_RAND]
 	if !found {
-		logrus.Errorf("response param %s not found in response", PARAM_SRV_RAND)
-		return
+		return fmt.Errorf("response param %s not found in response", PARAM_SRV_RAND)
 	}
-	logrus.Infof("srv_rand: %s %v", srvRand, srvRand)
 	passwordHash, err := m.getAuthHash(srvRand.(string))
 	if err != nil {
-		logrus.Error(err)
-		return
+		return err
 	}
 	if _, err = m.sendAuthAnswer(passwordHash); err != nil {
-		logrus.Error(err)
-		return
-	} else {
-		m.connected = true
+		return err
 	}
+	m.connected = true
+	return nil
 }
 
 func (m *MT5) sendAuthStart() (*MT5Response, error) {
@@ -45,14 +38,9 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 			"CRYPT_METHOD": CRYPT_METHOD,
 		},
 	}
-	responseStr, err := m.IssueCommand(cmd)
+	response, err := m.IssueCommand(cmd)
 	if err != nil {
 		return nil, fmt.Errorf("Auth failed at %s: %v", CMD_AUTH_START, err)
-	}
-	logrus.Info(len(responseStr), responseStr)
-	response, err := cmd.parseResponse(responseStr, false)
-	if err != nil {
-		return nil, err
 	}
 	if response.CommandName != CMD_AUTH_START {
 		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", CMD_AUTH_START, len(CMD_AUTH_START), response.CommandName, len(response.CommandName))
@@ -64,21 +52,16 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 }
 
 func (m *MT5) sendAuthAnswer(passwordHash string) (*MT5Response, error) {
-	hexHash := authHashToHexString(passwordHash)
 	cmd := &MT5Command{
 		Command: CMD_AUTH_ANSWER,
 		Parameters: map[string]interface{}{
-			PARAM_SRV_RAND_ANSWER: hexHash,
+			PARAM_SRV_RAND_ANSWER: passwordHash,
 			PARAM_CLI_RAND:        getRandomHex(16),
 		},
 	}
-	responseStr, err := m.IssueCommand(cmd)
+	response, err := m.IssueCommand(cmd)
 	if err != nil {
 		return nil, fmt.Errorf("auth failed at %s: %v", CMD_AUTH_ANSWER, err)
-	}
-	response, err := cmd.parseResponse(responseStr, false)
-	if err != nil {
-		return nil, err
 	}
 	if response.CommandName != CMD_AUTH_ANSWER {
 		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", CMD_AUTH_ANSWER, len(CMD_AUTH_ANSWER), response.CommandName, len(response.CommandName))
@@ -103,30 +86,26 @@ func (m *MT5) getAuthHash(srvRand string) (string, error) {
 	}
 	finalString := string(saltedPasswordHash[:]) + srvRandStr
 	finalHash := md5.Sum([]byte(finalString))
-	return string(finalHash[:]), nil
+	finalHashHex := ""
+	for _, each := range finalHash {
+		finalHashHex += fmt.Sprintf("%02x", each)
+	}
+	return finalHashHex, nil
 }
 
 func getSrvRandByteArray(srvRand string) (string, error) {
-	logrus.Infof("srv_rand here: %s", srvRand)
-	srvRandStr := ""
-	for i := 0; i < len(srvRand); i += 2 {
-		hexStr := srvRand[i : i+2]
-		logrus.Infof("hexStr: %s", hexStr)
+	srvRandByteArr := make([]byte, 0)
+	srvRandRune := []rune(srvRand)
+	for i := 0; i < len(srvRandRune); i += 2 {
+		hexRune := srvRandRune[i : i+2]
+		hexStr := string(hexRune)
 		decimal, err := strconv.ParseInt(hexStr, 16, 32)
 		if err != nil {
 			return "", fmt.Errorf("failed to parse %s: %v", PARAM_SRV_RAND, err)
 		}
-		srvRandStr += fmt.Sprintf("%d", decimal)
+		srvRandByteArr = append(srvRandByteArr, byte(decimal))
 	}
-	return srvRandStr, nil
-}
-
-func authHashToHexString(authHash string) string {
-	hexString := ""
-	for char := range authHash {
-		hexString += fmt.Sprintf("%02x", char)
-	}
-	return hexString
+	return string(srvRandByteArr), nil
 }
 
 func getRandomHex(len int) string {

@@ -2,7 +2,6 @@ package mt5
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net"
 
 	"github.com/sirupsen/logrus"
@@ -58,7 +57,7 @@ func (m *MT5) Connect() error {
 	return nil
 }
 
-func (m *MT5) IssueCommand(cmd *MT5Command) (string, error) {
+func (m *MT5) IssueCommand(cmd *MT5Command) (*MT5Response, error) {
 	m.commandCount++
 	if m.commandCount > MAX_COMMANDS {
 		m.commandCount = 1
@@ -66,24 +65,19 @@ func (m *MT5) IssueCommand(cmd *MT5Command) (string, error) {
 	cmdString, err := ToUTF16LE(cmd.toString())
 	logrus.Infof("cmd string (%d): %s", len(cmdString), cmdString)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	format := PACKET_FORMAT
 	if cmd.Command == CMD_AUTH_START {
-		format = PACKET_FORMAT
+		format = PREFIX_API
 	}
 	cmdString = fmt.Sprintf(format+"0%s", len(cmdString), m.commandCount, cmdString)
 	logrus.Infof("cmd (%d): %s", len(cmdString), cmdString)
-	_, err = m.conn.Write([]byte(cmdString))
+	count, err := m.conn.Write([]byte(cmdString))
 	if err != nil {
 		logrus.Errorf("error writing bytes: %v", err)
-		return "", err
+		return nil, err
 	}
-	result, err := ioutil.ReadAll(m.conn)
-	if err != nil {
-		logrus.Errorf("read tcp error: %v", err)
-		return "", err
-	}
-	logrus.Infof("response (%d): %v", len(string(result)), string(result))
-	return string(result), nil
+	logrus.Infof("wrote %d bytes", count)
+	return m.readResponse(cmd)
 }

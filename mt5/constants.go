@@ -6,9 +6,9 @@ const (
 	PACKET_FORMAT = "%04x%04x"
 
 	// Configuration
-	API_VERSION           = 3000
+	API_VERSION           = 3270
 	META_SIZE             = 9
-	PARAM_RETURN_CODE     = "RET_CODE"
+	PARAM_RETURN_CODE     = "RETCODE"
 	PARAM_SRV_RAND        = "SRV_RAND"
 	PARAM_SRV_RAND_ANSWER = "SRV_RAND_ANSWER"
 	PARAM_CLI_RAND        = "CLI_RAND"
