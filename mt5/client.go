@@ -12,23 +12,28 @@ type MT5 struct {
 	conn         *net.TCPConn
 	commandCount int
 	connected    bool
+	randomCrypt  string
 }
 
 type MT5Config struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	Version  string
-	domain   string
+	Host        string
+	Port        string
+	Username    string
+	Password    string
+	Version     string
+	CryptMethod string
+	domain      string
 }
 
-func (m *MT5) Init(config *MT5Config) {
+func (m *MT5) Init(config *MT5Config) error {
 	m.connected = false
 	m.config = config
 	m.commandCount = 0
 	m.Connect()
-	m.Auth()
+	if m.config.CryptMethod == "" {
+		m.config.CryptMethod = CRYPT_METHOD_DEFAULT
+	}
+	return m.Auth()
 }
 
 func (m *MT5) getDomain() string {

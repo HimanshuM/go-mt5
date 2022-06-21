@@ -6,6 +6,7 @@ import (
 
 	"github.com/HimanshuM/go_mt5/mt5"
 	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -15,10 +16,40 @@ func main() {
 	}
 
 	mt := mt5.MT5{}
-	mt.Init(&mt5.MT5Config{
-		Host:     os.Getenv("MT5_HOST"),
-		Port:     os.Getenv("MT5_PORT"),
-		Username: os.Getenv("MT5_USERNAME"),
-		Password: os.Getenv("MT5_PASSWORD"),
+	err := mt.Init(&mt5.MT5Config{
+		Host:        os.Getenv("MT5_HOST"),
+		Port:        os.Getenv("MT5_PORT"),
+		Username:    os.Getenv("MT5_USERNAME"),
+		Password:    os.Getenv("MT5_PASSWORD"),
+		CryptMethod: "NONE",
 	})
+	if err != nil {
+		logrus.Errorf("error during login: %v", err)
+		return
+	}
+	trade := &mt5.Trade{
+		Login:       os.Getenv("USER_LOGIN"),
+		Amount:      10,
+		Comment:     "Deposit test Go wrapper",
+		CheckMargin: true,
+	}
+	err = mt.SetBalance(trade)
+	if err != nil {
+		logrus.Errorf("error during updating balance: %v", err)
+	} else {
+		logrus.Infof("Ticket number: %v", trade.Ticket)
+	}
+
+	trade = &mt5.Trade{
+		Login:       os.Getenv("USER_LOGIN"),
+		Amount:      -1000000,
+		Comment:     "Withdraw test Go wrapper",
+		CheckMargin: true,
+	}
+	err = mt.SetBalance(trade)
+	if err != nil {
+		logrus.Errorf("error during updating balance: %v", err)
+	} else {
+		logrus.Infof("Ticket number: %v", trade.Ticket)
+	}
 }

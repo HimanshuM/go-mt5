@@ -21,6 +21,10 @@ type MT5Response struct {
 	Data         string
 }
 
+func (res *MT5Response) Okay() bool {
+	return res.ReturnCode == 0 || res.ReturnCode == 1
+}
+
 func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 	bufferMeta := new(bytes.Buffer)
 	bytesRead, err := io.CopyN(bufferMeta, m.conn, META_SIZE)

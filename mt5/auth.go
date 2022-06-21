@@ -3,28 +3,50 @@ package mt5
 import (
 	"crypto/md5"
 	"fmt"
-	"math/rand"
-	"strconv"
 )
 
 func (m *MT5) Auth() error {
+	if m.connected {
+		return nil
+	}
+
+	if !m.config.isCryptMethodKnown() {
+		return fmt.Errorf("unknown encryption method: %s", m.config.CryptMethod)
+	}
 	resAuthStart, err := m.sendAuthStart()
 	if err != nil {
 		return err
 	}
-	srvRand, found := resAuthStart.Parameters[PARAM_SRV_RAND]
+	srvRand, found := resAuthStart.Parameters[PARAM_AUTH_SRV_RAND]
 	if !found {
-		return fmt.Errorf("response param %s not found in response", PARAM_SRV_RAND)
+		return fmt.Errorf("response param %s not found in response", PARAM_AUTH_SRV_RAND)
 	}
 	passwordHash, err := m.getAuthHash(srvRand.(string))
 	if err != nil {
 		return err
 	}
-	if _, err = m.sendAuthAnswer(passwordHash); err != nil {
+	randomHex := getRandomHex(16)
+	resAuthAnswer, err := m.sendAuthAnswer(passwordHash, randomHex)
+	if err != nil {
 		return err
 	}
-	m.connected = true
+	validResponse, err := m.validateAuthAnswer(resAuthAnswer, randomHex)
+	if err != nil {
+		return err
+	}
+	if validResponse {
+		if randomCrypt, present := resAuthAnswer.Parameters[PARAM_AUTH_CRYPT_RAND]; !present {
+			return fmt.Errorf("auth answer response does not contain %s", PARAM_AUTH_CRYPT_RAND)
+		} else {
+			m.randomCrypt = randomCrypt.(string)
+		}
+	}
+	m.connected = validResponse
 	return nil
+}
+
+func (c *MT5Config) isCryptMethodKnown() bool {
+	return c.CryptMethod == CRYPT_METHOD_DEFAULT || c.CryptMethod == CRYPT_METHOD_NONE
 }
 
 func (m *MT5) sendAuthStart() (*MT5Response, error) {
@@ -35,7 +57,7 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 			"AGENT":        WORD_API,
 			"LOGIN":        m.config.Username,
 			"TYPE":         WORD_MANAGER,
-			"CRYPT_METHOD": CRYPT_METHOD,
+			"CRYPT_METHOD": m.config.CryptMethod,
 		},
 	}
 	response, err := m.IssueCommand(cmd)
@@ -51,12 +73,12 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 	return response, nil
 }
 
-func (m *MT5) sendAuthAnswer(passwordHash string) (*MT5Response, error) {
+func (m *MT5) sendAuthAnswer(passwordHash string, randomHex string) (*MT5Response, error) {
 	cmd := &MT5Command{
 		Command: CMD_AUTH_ANSWER,
 		Parameters: map[string]interface{}{
-			PARAM_SRV_RAND_ANSWER: passwordHash,
-			PARAM_CLI_RAND:        getRandomHex(16),
+			PARAM_AUTH_SRV_RAND_ANSWER: passwordHash,
+			PARAM_AUTH_CLI_RAND:        randomHex,
 		},
 	}
 	response, err := m.IssueCommand(cmd)
@@ -72,7 +94,7 @@ func (m *MT5) sendAuthAnswer(passwordHash string) (*MT5Response, error) {
 	return response, nil
 }
 
-func (m *MT5) getAuthHash(srvRand string) (string, error) {
+func (m *MT5) getAuthHash(hexString string) (string, error) {
 	utf16LEPassword, err := ToUTF16LE(m.config.Password)
 	if err != nil {
 		return "", err
@@ -80,11 +102,11 @@ func (m *MT5) getAuthHash(srvRand string) (string, error) {
 	passwordHash := md5.Sum([]byte(utf16LEPassword))
 	saltedPassword := string(passwordHash[:]) + WORD_API
 	saltedPasswordHash := md5.Sum([]byte(saltedPassword))
-	srvRandStr, err := getSrvRandByteArray(srvRand)
+	parsedHexString, err := parseHexString(hexString)
 	if err != nil {
 		return "", err
 	}
-	finalString := string(saltedPasswordHash[:]) + srvRandStr
+	finalString := string(saltedPasswordHash[:]) + parsedHexString
 	finalHash := md5.Sum([]byte(finalString))
 	finalHashHex := ""
 	for _, each := range finalHash {
@@ -93,25 +115,10 @@ func (m *MT5) getAuthHash(srvRand string) (string, error) {
 	return finalHashHex, nil
 }
 
-func getSrvRandByteArray(srvRand string) (string, error) {
-	srvRandByteArr := make([]byte, 0)
-	srvRandRune := []rune(srvRand)
-	for i := 0; i < len(srvRandRune); i += 2 {
-		hexRune := srvRandRune[i : i+2]
-		hexStr := string(hexRune)
-		decimal, err := strconv.ParseInt(hexStr, 16, 32)
-		if err != nil {
-			return "", fmt.Errorf("failed to parse %s: %v", PARAM_SRV_RAND, err)
-		}
-		srvRandByteArr = append(srvRandByteArr, byte(decimal))
+func (m *MT5) validateAuthAnswer(resAuthAnswer *MT5Response, randomHex string) (bool, error) {
+	passwordHash, err := m.getAuthHash(randomHex)
+	if err != nil {
+		return false, fmt.Errorf("failed to validate the auth answer: %v", err)
 	}
-	return string(srvRandByteArr), nil
-}
-
-func getRandomHex(len int) string {
-	hexString := ""
-	for i := 0; i < len; i++ {
-		hexString += fmt.Sprintf("%02x", rand.Intn(254))
-	}
-	return hexString
+	return passwordHash == resAuthAnswer.Parameters[PARAM_AUTH_CLI_RAND_ANSWER], nil
 }
