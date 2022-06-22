@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// parseHexString parses a hex string into string built from decimal byte array
 func parseHexString(srvRand string) (string, error) {
 	srvRandByteArr := make([]byte, 0)
 	srvRandRune := []rune(srvRand)
@@ -21,6 +22,7 @@ func parseHexString(srvRand string) (string, error) {
 	return string(srvRandByteArr), nil
 }
 
+// getRandomHex generates a hex string of specified length from random decimal numbers
 func getRandomHex(len int) string {
 	hexString := ""
 	for i := 0; i < len; i++ {

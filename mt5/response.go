@@ -10,6 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// MT5Response struct holds the response received from the MT5 server against a command
 type MT5Response struct {
 	BodySize     int
 	CommandCount int
@@ -21,10 +22,12 @@ type MT5Response struct {
 	Data         string
 }
 
+// Okay checks if the response was a success (RETCODE = 0 or 1)
 func (res *MT5Response) Okay() bool {
 	return res.ReturnCode == 0 || res.ReturnCode == 1
 }
 
+// readResponse reads the response from the socket connection and builds the MT5Response object
 func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 	bufferMeta := new(bytes.Buffer)
 	bytesRead, err := io.CopyN(bufferMeta, m.conn, META_SIZE)
@@ -60,6 +63,7 @@ func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 	return response, nil
 }
 
+// parseMeta parses the initial 9 bytes of the response that help parse the response
 func parseMeta(response string) (*MT5Response, error) {
 	meta := response[0:META_SIZE]
 	bodySize, err := strconv.ParseInt(meta[0:4], 16, 32)
@@ -82,6 +86,7 @@ func parseMeta(response string) (*MT5Response, error) {
 	}, nil
 }
 
+// parseParameters constructs a map from the response parameters
 func (mt5Response *MT5Response) parseParameters(components []string) error {
 	mt5Response.Parameters = make(map[string]interface{})
 	for _, parameter := range components {
@@ -105,6 +110,7 @@ func (mt5Response *MT5Response) parseParameters(components []string) error {
 	return nil
 }
 
+// parseRetunString gets the return code and description from the RETCODE parameter
 func (mt5Response *MT5Response) parseReturnString(returnStr string) error {
 	components := strings.SplitN(returnStr, " ", 2)
 	retCode, err := strconv.ParseInt(components[0], 10, 32)

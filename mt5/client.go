@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// MT5 structure is the base structure for interacting with MT5 server
 type MT5 struct {
 	config       *MT5Config
 	conn         *net.TCPConn
@@ -15,6 +16,7 @@ type MT5 struct {
 	randomCrypt  string
 }
 
+// MT5Config structure allows to specify the MT5 server configuration and manager credentials
 type MT5Config struct {
 	Host        string
 	Port        string
@@ -25,6 +27,7 @@ type MT5Config struct {
 	domain      string
 }
 
+// Init initializes the connection with MT5 server and performs auth
 func (m *MT5) Init(config *MT5Config) error {
 	m.connected = false
 	m.config = config
@@ -47,6 +50,7 @@ func (m *MT5) getDomain() string {
 	return m.config.domain
 }
 
+// Connect sets up a socket connection with the MT5 server using MT5Config
 func (m *MT5) Connect() error {
 	remoteAddr, err := net.ResolveTCPAddr("tcp4", m.getDomain())
 	if err != nil {
@@ -62,6 +66,7 @@ func (m *MT5) Connect() error {
 	return nil
 }
 
+// IssueCommand sends a command to the MT5 server specified using MT5Command struct
 func (m *MT5) IssueCommand(cmd *MT5Command) (*MT5Response, error) {
 	m.commandCount++
 	if m.commandCount > MAX_COMMANDS {

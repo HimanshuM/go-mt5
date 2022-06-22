@@ -2,6 +2,7 @@ package mt5
 
 import "fmt"
 
+// Trade structure for all kinds of trades
 type Trade struct {
 	Login       string
 	Amount      int64
@@ -10,6 +11,7 @@ type Trade struct {
 	CheckMargin bool
 }
 
+// SetBalance performs deposit/withdraw actions
 func (m *MT5) SetBalance(t *Trade) error {
 	checkMargin := 0
 	if t.CheckMargin {

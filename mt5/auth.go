@@ -5,12 +5,13 @@ import (
 	"fmt"
 )
 
+// Auth performs authorization with the MT5 server
 func (m *MT5) Auth() error {
 	if m.connected {
 		return nil
 	}
 
-	if !m.config.isCryptMethodKnown() {
+	if !m.config.isEncryptMethodKnown() {
 		return fmt.Errorf("unknown encryption method: %s", m.config.CryptMethod)
 	}
 	resAuthStart, err := m.sendAuthStart()
@@ -45,10 +46,12 @@ func (m *MT5) Auth() error {
 	return nil
 }
 
-func (c *MT5Config) isCryptMethodKnown() bool {
+// isEncryptMethodKnown checks if the encryption method is implemented
+func (c *MT5Config) isEncryptMethodKnown() bool {
 	return c.CryptMethod == CRYPT_METHOD_DEFAULT || c.CryptMethod == CRYPT_METHOD_NONE
 }
 
+// sendAuthStart sends the AUTH_START command to the MT5 server
 func (m *MT5) sendAuthStart() (*MT5Response, error) {
 	cmd := &MT5Command{
 		Command: CMD_AUTH_START,
@@ -73,6 +76,7 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 	return response, nil
 }
 
+// sendAuthAnswer sends AUTH_ANSWER command to the MT5 server
 func (m *MT5) sendAuthAnswer(passwordHash string, randomHex string) (*MT5Response, error) {
 	cmd := &MT5Command{
 		Command: CMD_AUTH_ANSWER,
@@ -94,6 +98,7 @@ func (m *MT5) sendAuthAnswer(passwordHash string, randomHex string) (*MT5Respons
 	return response, nil
 }
 
+// getAuthHash returns an MD5 hash of the password with a given hex string
 func (m *MT5) getAuthHash(hexString string) (string, error) {
 	utf16LEPassword, err := ToUTF16LE(m.config.Password)
 	if err != nil {
@@ -115,6 +120,7 @@ func (m *MT5) getAuthHash(hexString string) (string, error) {
 	return finalHashHex, nil
 }
 
+// validateAuthAnswer validates the CLI_RAND_ANSWER against the password hash using CLI_RAND
 func (m *MT5) validateAuthAnswer(resAuthAnswer *MT5Response, randomHex string) (bool, error) {
 	passwordHash, err := m.getAuthHash(randomHex)
 	if err != nil {
