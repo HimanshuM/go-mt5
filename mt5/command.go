@@ -23,7 +23,7 @@ func (c *MT5Command) toString() string {
 		components[i] = fmt.Sprintf("%s=%v", k, c.sanitizeValue(val))
 		i++
 	}
-	return c.Command + "|" + strings.Join(components, "|") + "\r\n" + c.Body
+	return fmt.Sprintf("%s|%s\r\n%s", c.Command, strings.Join(components, "|"), c.Body)
 }
 
 // sanitizeValue sanitizes the command parameter values

@@ -48,7 +48,7 @@ func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 		responseStr += bufferResponse.String()
 		readBytes += int(bytesRead)
 	}
-	logrus.Infof("response: %s", responseStr)
+	logrus.Debugf("response: %s", responseStr)
 	headerLength := response.BodySize
 	if cmd.ResponseHasBody {
 		headerLength = strings.Index(responseStr, "\n")
@@ -60,6 +60,12 @@ func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 	headerComponents := strings.Split(header, "|")
 	response.CommandName = headerComponents[0]
 	response.parseParameters(headerComponents[1:])
+
+	if body, err := ToUTF8(responseStr[headerLength:]); err != nil {
+		return nil, fmt.Errorf("error converting body to UTF-8: %v", err)
+	} else {
+		response.Data = body
+	}
 	return response, nil
 }
 
@@ -74,7 +80,7 @@ func parseMeta(response string) (*MT5Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error decoding command count from response: %v", err)
 	}
-	flag, err := strconv.ParseInt(meta[8:9], 10, 32)
+	flag, err := strconv.Atoi(meta[8:9])
 	if err != nil {
 		return nil, fmt.Errorf("error decoding flag from response: %v", err)
 	}
@@ -82,7 +88,7 @@ func parseMeta(response string) (*MT5Response, error) {
 	return &MT5Response{
 		BodySize:     int(bodySize),
 		CommandCount: int(cmdCount),
-		Flag:         int(flag),
+		Flag:         flag,
 	}, nil
 }
 

@@ -1,6 +1,8 @@
 package mt5
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Trade structure for all kinds of trades
 type Trade struct {

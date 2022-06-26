@@ -68,12 +68,13 @@ func (m *MT5) Connect() error {
 
 // IssueCommand sends a command to the MT5 server specified using MT5Command struct
 func (m *MT5) IssueCommand(cmd *MT5Command) (*MT5Response, error) {
+	logrus.Debugf("executing command: %s", cmd.Command)
 	m.commandCount++
 	if m.commandCount > MAX_COMMANDS {
 		m.commandCount = 1
 	}
 	cmdString, err := ToUTF16LE(cmd.toString())
-	logrus.Infof("cmd string (%d): %s", len(cmdString), cmdString)
+	logrus.Debugf("cmd string (%d): %s", len(cmdString), cmdString)
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +83,12 @@ func (m *MT5) IssueCommand(cmd *MT5Command) (*MT5Response, error) {
 		format = PREFIX_API
 	}
 	cmdString = fmt.Sprintf(format+"0%s", len(cmdString), m.commandCount, cmdString)
-	logrus.Infof("cmd (%d): %s", len(cmdString), cmdString)
+	logrus.Debugf("cmd (%d): %s", len(cmdString), cmdString)
 	count, err := m.conn.Write([]byte(cmdString))
 	if err != nil {
 		logrus.Errorf("error writing bytes: %v", err)
 		return nil, err
 	}
-	logrus.Infof("wrote %d bytes", count)
+	logrus.Debugf("wrote %d bytes", count)
 	return m.readResponse(cmd)
 }
