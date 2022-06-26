@@ -56,6 +56,7 @@ type MT5User struct {
 	LeadSource        string  `json:"LeadSource"`
 }
 
+// CreateUser creates a user on the MT5 server
 func (m *MT5) CreateUser(u *MT5User) error {
 	body, err := u.toJSON()
 	if err != nil {
@@ -86,6 +87,7 @@ func (m *MT5) CreateUser(u *MT5User) error {
 	return u.fromJSON(createdUserMap, response.Parameters)
 }
 
+// constructUserCreateParameters returns a map created from the MT5User
 func (u *MT5User) constructUserCreateParameters() map[string]interface{} {
 	return map[string]interface{}{
 		PARAM_USER_LOGIN:         u.Login,
@@ -112,6 +114,7 @@ func (u *MT5User) constructUserCreateParameters() map[string]interface{} {
 	}
 }
 
+// toJSON marshalls the MT5User object into JSON
 func (u *MT5User) toJSON() (string, error) {
 	body, err := json.Marshal(u)
 	if err != nil {
@@ -125,11 +128,13 @@ func (u *MT5User) toJSON() (string, error) {
 	return string(regx.ReplaceAllFunc(body, replaceUTF8Marker)), nil
 }
 
+// replaceUTF8Marker replaces UTF-8 markers from strings
 func replaceUTF8Marker(source []byte) []byte {
 	logrus.Infof("source: %s", string(source))
 	return []byte("&#" + html.EscapeString(string(source)) + ";")
 }
 
+// fromJSON populates Login, Registration, LastAccess and LastPassChange fields from JSON
 func (u *MT5User) fromJSON(userMap map[string]interface{}, parameters map[string]interface{}) error {
 	if login, present := parameters[PARAM_USER_LOGIN]; present {
 		if loginInt, err := strconv.Atoi(login.(string)); err != nil {
