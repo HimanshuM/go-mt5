@@ -26,4 +26,12 @@ func TestMain(t *testing.T) {
 
 	// User tests
 	t.Run("testUserCreate", testUserCreate)
+
+	// Symbol tests
+	t.Run("testSymbolGet", testSymbolGet)
+	t.Run("testSymbolsGetAll", testSymbolsGetAll)
+	t.Run("testSymbolsGetByIndex", testSymbolsGetByIndex)
+
+	// Time tests
+	t.Run("testTimestampGet", testTimestampGet)
 }

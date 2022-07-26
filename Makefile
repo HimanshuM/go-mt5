@@ -1,8 +1,8 @@
 GO = go
-PACKAGE = github.com/HimanshuM/go_mt5
+PACKAGE = github.com/HimanshuM/go-mt5
 
 run:
 	$(GO) run main.go
 
 test:
-	$(GO) test -run ^TestMain$$ $(PACKAGE)/mt5tests
+	$(GO) test -run ^TestMain$$ $(PACKAGE)/mt5tests -v
