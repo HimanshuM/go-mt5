@@ -27,6 +27,10 @@ func (res *MT5Response) Okay() bool {
 	return res.ReturnCode == 0 || res.ReturnCode == 1
 }
 
+func (res *MT5Response) IsUnauthorized() bool {
+	return res.ReturnCode == 8
+}
+
 // readResponse reads the response from the socket connection and builds the MT5Response object
 func (m *MT5) readResponse(cmd *MT5Command) (*MT5Response, error) {
 	bufferMeta := new(bytes.Buffer)

@@ -14,6 +14,10 @@ const (
 	CMD_AUTH_START  = "AUTH_START"
 	CMD_AUTH_ANSWER = "AUTH_ANSWER"
 
+	// Time commands
+	CMD_SERVER_TIME         = "TIME_SERVER"
+	CMD_SERVER_TIME_SETTING = "TIME_GET"
+
 	// User commands
 	CMD_USER_ADD = "USER_ADD"
 
@@ -35,6 +39,14 @@ const (
 	PARAM_AUTH_CLI_RAND        = "CLI_RAND"
 	PARAM_AUTH_CLI_RAND_ANSWER = "CLI_RAND_ANSWER"
 	PARAM_AUTH_CRYPT_RAND      = "CRYPT_RAND"
+
+	// Time parameters
+	PARAM_SERVER_TIME               = "TIME"
+	PARAM_SERVER_TIME_DAYLIGHT      = "Daylight"
+	PARAM_SERVER_TIME_DAYLIGHTSTATE = "DaylightState"
+	PARAM_SERVER_TIME_TIMEZONE      = "TimeZone"
+	PARAM_SERVER_TIME_TIMESERVER    = "TimeServer"
+	PARAM_SERVER_TIME_DAYS          = "Days"
 
 	// User parameters
 	PARAM_USER_LOGIN            = "LOGIN"
