@@ -20,6 +20,11 @@ const (
 	// Trade commands
 	CMD_TRADE_BALANCE = "TRADE_BALANCE"
 
+	// Symbol commands
+	CMD_SYMBOL_LIST = "SYMBOL_LIST"
+	CMD_SYMBOL_GET  = "SYMBOL_GET"
+	CMD_SYMBOL_NEXT = "SYMBOL_NEXT"
+
 	/* PARAMETERS */
 	// Common parameters
 	PARAM_RETURN_CODE = "RETCODE"
@@ -67,6 +72,10 @@ const (
 	PARAM_TRADE_COMMENT      = "COMMENT"
 	PARAM_TRADE_CHECK_MARGIN = "CHECK_MARGIN"
 	PARAM_TRADE_TICKET       = "TICKET"
+
+	// Symbol parameters
+	PARAM_SYMBOL       = "SYMBOL"
+	PARAM_SYMBOL_INDEX = "INDEX"
 
 	/* CONSTANTS */
 	// Trade constants
