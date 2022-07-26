@@ -1,4 +1,4 @@
-module github.com/HimanshuM/go_mt5
+module github.com/HimanshuM/go-mt5
 
 go 1.18
 

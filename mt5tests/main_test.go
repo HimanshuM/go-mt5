@@ -3,7 +3,7 @@ package mt5tests
 import (
 	"testing"
 
-	"github.com/HimanshuM/go_mt5/mt5"
+	"github.com/HimanshuM/go-mt5/mt5"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
