@@ -29,9 +29,15 @@ const (
 	CMD_SYMBOL_GET  = "SYMBOL_GET"
 	CMD_SYMBOL_NEXT = "SYMBOL_NEXT"
 
+	// Tick commands
+	CMD_TICK_LAST          = "TICK_LAST"
+	CMD_TICK_LAST_BY_GROUP = "TICK_LAST_GROUP"
+	CMD_TICK_STATS         = "TICK_STAT"
+
 	/* PARAMETERS */
 	// Common parameters
 	PARAM_RETURN_CODE = "RETCODE"
+	PARAM_GROUP       = "GROUP"
 
 	// Authorization parameters
 	PARAM_AUTH_SRV_RAND        = "SRV_RAND"
@@ -88,6 +94,9 @@ const (
 	// Symbol parameters
 	PARAM_SYMBOL       = "SYMBOL"
 	PARAM_SYMBOL_INDEX = "INDEX"
+
+	// Tick parameters
+	PARAM_TICK_TRANS_ID = "TRANS_ID"
 
 	/* CONSTANTS */
 	// Trade constants
