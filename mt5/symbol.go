@@ -150,11 +150,11 @@ func (m *MT5) GetAllSymbols() ([]string, error) {
 }
 
 // SearchSymbols searches for symbols with MT5 platform
-func (m *MT5) GetSymbol(symbolStr string) (*Symbol, error) {
+func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
 	cmd := &MT5Command{
 		Command: CMD_SYMBOL_GET,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL: symbolStr,
+			PARAM_SYMBOL: symbolName,
 		},
 		ResponseHasBody: true,
 	}
