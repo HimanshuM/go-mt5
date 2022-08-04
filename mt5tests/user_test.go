@@ -8,7 +8,7 @@ import (
 )
 
 func testUserCreate(t *testing.T) {
-	user := &mt5.MT5User{
+	user := &mt5.User{
 		Name:           "Go Test",
 		Email:          "go@test.com",
 		Rights:         0x1E3,

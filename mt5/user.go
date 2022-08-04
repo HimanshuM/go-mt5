@@ -10,8 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// MT5User struct resembles an MT5 MT5User object
-type MT5User struct {
+// User struct resembles an MT5 User object
+type User struct {
 	Login             int     `json:"Login"`
 	MainPassword      string  `json:"MainPassword"`
 	InvestPassword    string  `json:"InvestPassword"`
@@ -57,7 +57,7 @@ type MT5User struct {
 }
 
 // CreateUser creates a user on the MT5 server
-func (m *MT5) CreateUser(u *MT5User) error {
+func (m *MT5) CreateUser(u *User) error {
 	body, err := u.toJSON()
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func (m *MT5) CreateUser(u *MT5User) error {
 }
 
 // constructUserCreateParameters returns a map created from the MT5User
-func (u *MT5User) constructUserCreateParameters() map[string]interface{} {
+func (u *User) constructUserCreateParameters() map[string]interface{} {
 	return map[string]interface{}{
 		PARAM_USER_LOGIN:         u.Login,
 		PARAM_USER_PASS_MAIN:     u.MainPassword,
@@ -115,7 +115,7 @@ func (u *MT5User) constructUserCreateParameters() map[string]interface{} {
 }
 
 // toJSON marshalls the MT5User object into JSON
-func (u *MT5User) toJSON() (string, error) {
+func (u *User) toJSON() (string, error) {
 	body, err := json.Marshal(u)
 	if err != nil {
 		return "", fmt.Errorf("error marshalling user to JSON: %v", err)
@@ -135,7 +135,7 @@ func replaceUTF8Marker(source []byte) []byte {
 }
 
 // fromJSON populates Login, Registration, LastAccess and LastPassChange fields from JSON
-func (u *MT5User) fromJSON(userMap map[string]interface{}, parameters map[string]interface{}) error {
+func (u *User) fromJSON(userMap map[string]interface{}, parameters map[string]interface{}) error {
 	if login, present := parameters[PARAM_USER_LOGIN]; present {
 		if loginInt, err := strconv.Atoi(login.(string)); err != nil {
 			return fmt.Errorf("error parsing Login from response parameter: %v", err)
