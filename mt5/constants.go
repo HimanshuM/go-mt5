@@ -18,6 +18,11 @@ const (
 	CMD_SERVER_TIME         = "TIME_SERVER"
 	CMD_SERVER_TIME_SETTING = "TIME_GET"
 
+	// Group commands
+	CMD_GROUP_TOTAL = "GROUP_TOTAL"
+	CMD_GROUP_INDEX = "GROUP_NEXT"
+	CMD_GROUP_GET   = "GROUP_GET"
+
 	// User commands
 	CMD_USER_ADD = "USER_ADD"
 
@@ -38,6 +43,8 @@ const (
 	// Common parameters
 	PARAM_RETURN_CODE = "RETCODE"
 	PARAM_GROUP       = "GROUP"
+	PARAM_INDEX       = "INDEX"
+	PARAM_TOTAL       = "TOTAL"
 
 	// Authorization parameters
 	PARAM_AUTH_SRV_RAND        = "SRV_RAND"
@@ -92,8 +99,7 @@ const (
 	PARAM_TRADE_TICKET       = "TICKET"
 
 	// Symbol parameters
-	PARAM_SYMBOL       = "SYMBOL"
-	PARAM_SYMBOL_INDEX = "INDEX"
+	PARAM_SYMBOL = "SYMBOL"
 
 	// Tick parameters
 	PARAM_TICK_TRANS_ID = "TRANS_ID"
