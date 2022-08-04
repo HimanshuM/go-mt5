@@ -140,7 +140,7 @@ func (m *MT5) GetAllSymbols() ([]string, error) {
 		return nil, err
 	}
 	if !res.Okay() {
-		return nil, fmt.Errorf("error setting balance: %v", res.ReturnValue)
+		return nil, fmt.Errorf("error getting all symbols: %v", res.ReturnValue)
 	}
 	symbols := make([]string, 0)
 	if err := json.Unmarshal([]byte(res.Data), &symbols); err != nil {
@@ -149,7 +149,7 @@ func (m *MT5) GetAllSymbols() ([]string, error) {
 	return symbols, nil
 }
 
-// SearchSymbols searches for symbols with MT5 platform
+// SearchSymbols searches for symbols within MT5 platform
 func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
 	cmd := &MT5Command{
 		Command: CMD_SYMBOL_GET,
@@ -163,7 +163,7 @@ func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
 		return nil, err
 	}
 	if !res.Okay() {
-		return nil, fmt.Errorf("error setting balance: %v", res.ReturnValue)
+		return nil, fmt.Errorf("error getting symbol by name: %v", res.ReturnValue)
 	}
 	var symbol Symbol
 	if err := json.Unmarshal([]byte(res.Data), &symbol); err != nil {
@@ -172,12 +172,12 @@ func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
 	return &symbol, nil
 }
 
-// GetSymbolByIndex searches for symbols with MT5 platform
-func (m *MT5) GetSymbolByIndex(index uint) (*Symbol, error) {
+// GetSymbolByIndex gets a symbol by index
+func (m *MT5) GetSymbolByIndex(index int) (*Symbol, error) {
 	cmd := &MT5Command{
 		Command: CMD_SYMBOL_NEXT,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL_INDEX: index,
+			PARAM_INDEX: index,
 		},
 		ResponseHasBody: true,
 	}
@@ -186,7 +186,7 @@ func (m *MT5) GetSymbolByIndex(index uint) (*Symbol, error) {
 		return nil, err
 	}
 	if !res.Okay() {
-		return nil, fmt.Errorf("error setting balance: %v", res.ReturnValue)
+		return nil, fmt.Errorf("error getting symbol by index: %v", res.ReturnValue)
 	}
 	var symbol Symbol
 	if err := json.Unmarshal([]byte(res.Data), &symbol); err != nil {
