@@ -34,7 +34,9 @@ func (m *Client) Init(config *Config) error {
 	m.connected = false
 	m.config = config
 	m.commandCount = 0
-	m.Connect()
+	if err := m.Connect(); err != nil {
+		return err
+	}
 	if m.config.CryptMethod == "" {
 		m.config.CryptMethod = constants.CRYPT_METHOD_DEFAULT
 	}

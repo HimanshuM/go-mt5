@@ -64,13 +64,13 @@ func (m *Client) CreateUser(u *User) error {
 		return err
 	}
 
-	logrus.Infof("body: %s", string(body))
+	logrus.Infof("body: %s", body)
 
 	cmd := &Command{
 		Command:         constants.CMD_USER_ADD,
 		Parameters:      u.constructUserCreateParameters(),
 		ResponseHasBody: true,
-		Body:            string(body),
+		Body:            body,
 	}
 	response, err := m.IssueCommand(cmd)
 	if err != nil {
@@ -122,10 +122,7 @@ func (u *User) toJSON() (string, error) {
 		return "", fmt.Errorf("error marshalling user to JSON: %v", err)
 	}
 
-	regx, err := regexp.Compile(`\\u([0-9a-fA-F]{4})`)
-	if err != nil {
-		return "", fmt.Errorf("error compiling regular expression for user creation: %v", err)
-	}
+	regx := regexp.MustCompile(`\\u([0-9a-fA-F]{4})`)
 	return string(regx.ReplaceAllFunc(body, replaceUTF8Marker)), nil
 }
 
@@ -136,7 +133,7 @@ func replaceUTF8Marker(source []byte) []byte {
 }
 
 // fromJSON populates Login, Registration, LastAccess and LastPassChange fields from JSON
-func (u *User) fromJSON(userMap map[string]interface{}, parameters map[string]interface{}) error {
+func (u *User) fromJSON(userMap, parameters map[string]interface{}) error {
 	if login, present := parameters[constants.PARAM_USER_LOGIN]; present {
 		if loginInt, err := strconv.Atoi(login.(string)); err != nil {
 			return fmt.Errorf("error parsing Login from response parameter: %v", err)
@@ -147,24 +144,24 @@ func (u *User) fromJSON(userMap map[string]interface{}, parameters map[string]in
 		if login, err := strconv.Atoi(userMap[constants.PARAM_USER_LOGIN_JSON].(string)); err != nil {
 			return fmt.Errorf("error parsing Login from response: %v", err)
 		} else {
-			u.Login = int(login)
+			u.Login = login
 		}
 	}
 
 	if registration, err := strconv.Atoi(userMap[constants.PARAM_USER_REGISTRATION].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
-		u.Registration = int(registration)
+		u.Registration = registration
 	}
 	if lastAccess, err := strconv.Atoi(userMap[constants.PARAM_USER_LAST_ACCESS].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
-		u.LastAccess = int(lastAccess)
+		u.LastAccess = lastAccess
 	}
 	if lastPassChange, err := strconv.Atoi(userMap[constants.PARAM_USER_LAST_PASS_CHANGE].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
-		u.LastPassChange = int(lastPassChange)
+		u.LastPassChange = lastPassChange
 	}
 	return nil
 }

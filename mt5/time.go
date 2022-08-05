@@ -47,21 +47,24 @@ func (m *Client) GetServerTimeSettings() (*ServerTimeSetting, error) {
 		TimeServer: responseMap[constants.PARAM_SERVER_TIME_TIMESERVER].(string),
 		Days:       responseMap[constants.PARAM_SERVER_TIME_DAYS].([][]string),
 	}
-	if daylight, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT].(string)); err != nil {
+	daylight, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT].(string))
+	if err != nil {
 		return nil, fmt.Errorf("invalid response %s for Daylight: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT], err)
-	} else {
-		serverTimeSettings.Daylight = daylight
 	}
-	if daylightState, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE].(string)); err != nil {
+	serverTimeSettings.Daylight = daylight
+
+	daylightState, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE].(string))
+	if err != nil {
 		return nil, fmt.Errorf("invalid response %s for DaylightState: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE], err)
-	} else {
-		serverTimeSettings.DaylightState = daylightState
 	}
-	if tz, err := strconv.Atoi(responseMap[constants.PARAM_SERVER_TIME_TIMEZONE].(string)); err != nil {
+	serverTimeSettings.DaylightState = daylightState
+
+	tz, err := strconv.Atoi(responseMap[constants.PARAM_SERVER_TIME_TIMEZONE].(string))
+	if err != nil {
 		return nil, fmt.Errorf("invalid response %s for TimeZone: %v", responseMap[constants.PARAM_SERVER_TIME_TIMEZONE], err)
-	} else {
-		serverTimeSettings.TimeZone = tz
 	}
+	serverTimeSettings.TimeZone = tz
+
 	return serverTimeSettings, nil
 }
 

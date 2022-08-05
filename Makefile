@@ -6,3 +6,7 @@ run:
 
 test:
 	$(GO) test -run ^TestMain$$ $(PACKAGE)/mt5tests -v
+
+lint:
+	go fmt ./...
+	golangci-lint run

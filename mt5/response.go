@@ -65,13 +65,15 @@ func (m *Client) readResponse(cmd *Command) (*Response, error) {
 	}
 	headerComponents := strings.Split(header, "|")
 	response.CommandName = headerComponents[0]
-	response.parseParameters(headerComponents[1:])
-
-	if body, err := encoding.ToUTF8(responseStr[headerLength:]); err != nil {
-		return nil, fmt.Errorf("error converting body to UTF-8: %v", err)
-	} else {
-		response.Data = body
+	if err := response.parseParameters(headerComponents[1:]); err != nil {
+		return nil, err
 	}
+
+	body, err := encoding.ToUTF8(responseStr[headerLength:])
+	if err != nil {
+		return nil, fmt.Errorf("error converting body to UTF-8: %v", err)
+	}
+	response.Data = body
 	return response, nil
 }
 
@@ -99,11 +101,11 @@ func parseMeta(response string) (*Response, error) {
 }
 
 // parseParameters constructs a map from the response parameters
-func (mt5Response *Response) parseParameters(components []string) error {
-	mt5Response.Parameters = make(map[string]interface{})
+func (res *Response) parseParameters(components []string) error {
+	res.Parameters = make(map[string]interface{})
 	for _, parameter := range components {
 		parameter = strings.Trim(parameter, "\r\n ")
-		if len(parameter) == 0 {
+		if parameter == "" {
 			continue
 		}
 		components := strings.SplitN(parameter, "=", 2)
@@ -111,25 +113,25 @@ func (mt5Response *Response) parseParameters(components []string) error {
 			continue
 		}
 		if components[0] == constants.PARAM_RETURN_CODE {
-			err := mt5Response.parseReturnString(components[1])
+			err := res.parseReturnString(components[1])
 			if err != nil {
 				return err
 			}
 		} else {
-			mt5Response.Parameters[components[0]] = components[1]
+			res.Parameters[components[0]] = components[1]
 		}
 	}
 	return nil
 }
 
 // parseRetunString gets the return code and description from the RETCODE parameter
-func (mt5Response *Response) parseReturnString(returnStr string) error {
+func (res *Response) parseReturnString(returnStr string) error {
 	components := strings.SplitN(returnStr, " ", 2)
 	retCode, err := strconv.ParseInt(components[0], 10, 32)
 	if err != nil {
 		return fmt.Errorf("error parsing return parameter: %v", err)
 	}
-	mt5Response.ReturnCode = int(retCode)
-	mt5Response.ReturnValue = components[1]
+	res.ReturnCode = int(retCode)
+	res.ReturnValue = components[1]
 	return nil
 }

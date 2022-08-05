@@ -28,8 +28,8 @@ func (c *Command) toString() string {
 
 // sanitizeValue sanitizes the command parameter values
 func (c *Command) sanitizeValue(value string) string {
-	value = strings.Replace(value, "\\", "\\\\", -1)
-	value = strings.Replace(value, "=", "\\=", -1)
-	value = strings.Replace(value, "|", "\\|", -1)
-	return strings.Replace(value, "\n", "\\\n", -1)
+	value = strings.ReplaceAll(value, "\\", "\\\\")
+	value = strings.ReplaceAll(value, "=", "\\=")
+	value = strings.ReplaceAll(value, "|", "\\|")
+	return strings.ReplaceAll(value, "\n", "\\\n")
 }

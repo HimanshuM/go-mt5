@@ -39,11 +39,11 @@ func (m *Client) Auth() error {
 		return err
 	}
 	if validResponse {
-		if randomCrypt, present := resAuthAnswer.Parameters[constants.PARAM_AUTH_CRYPT_RAND]; !present {
+		randomCrypt, present := resAuthAnswer.Parameters[constants.PARAM_AUTH_CRYPT_RAND]
+		if !present {
 			return fmt.Errorf("auth answer response does not contain %s", constants.PARAM_AUTH_CRYPT_RAND)
-		} else {
-			m.randomCrypt = randomCrypt.(string)
 		}
+		m.randomCrypt = randomCrypt.(string)
 	}
 	m.connected = validResponse
 	return nil
@@ -80,7 +80,7 @@ func (m *Client) sendAuthStart() (*Response, error) {
 }
 
 // sendAuthAnswer sends AUTH_ANSWER command to the MT5 server
-func (m *Client) sendAuthAnswer(passwordHash string, randomHex string) (*Response, error) {
+func (m *Client) sendAuthAnswer(passwordHash, randomHex string) (*Response, error) {
 	cmd := &Command{
 		Command: constants.CMD_AUTH_ANSWER,
 		Parameters: map[string]interface{}{

@@ -25,9 +25,9 @@ func parseHexString(srvRand string) (string, error) {
 }
 
 // getRandomHex generates a hex string of specified length from random decimal numbers
-func getRandomHex(len int) string {
+func getRandomHex(size int) string {
 	hexString := ""
-	for i := 0; i < len; i++ {
+	for i := 0; i < size; i++ {
 		hexString += fmt.Sprintf("%02x", rand.Intn(254))
 	}
 	return hexString

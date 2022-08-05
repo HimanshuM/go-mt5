@@ -130,11 +130,11 @@ func (m *Client) GetAllGroups() ([]*Group, error) {
 	}
 	groups := make([]*Group, total)
 	for i := 0; i < total; i++ {
-		if group, err := m.GetGroupByIndex(i); err != nil {
+		group, err := m.GetGroupByIndex(i)
+		if err != nil {
 			return nil, err
-		} else {
-			groups[i] = group
 		}
+		groups[i] = group
 	}
 	return groups, nil
 }
