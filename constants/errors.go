@@ -19,3 +19,6 @@ var ErrShutdown = errors.New("shutdown in progress")
 
 // ErrCanceled = Return code 16
 var ErrCanceled = errors.New("operation canceled")
+
+// ErrDisconnected
+var ErrDisconnected = errors.New("disconnected")

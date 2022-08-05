@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	// Prefixes
 	PREFIX_API    = "MT5WEBAPI%04x%04x"
@@ -13,6 +15,10 @@ const (
 	// Authorization commands
 	CMD_AUTH_START  = "AUTH_START"
 	CMD_AUTH_ANSWER = "AUTH_ANSWER"
+
+	// Ping command
+	CMD_PING  = "TEST_ACCESS"
+	CMD_CLOSE = "QUIT"
 
 	// Time commands
 	CMD_SERVER_TIME         = "TIME_SERVER"
@@ -113,4 +119,5 @@ const (
 	WORD_MANAGER         = "MANAGER"
 	CRYPT_METHOD_DEFAULT = "AES256OFB"
 	CRYPT_METHOD_NONE    = "NONE"
+	PING_DURATION        = time.Second * 20
 )

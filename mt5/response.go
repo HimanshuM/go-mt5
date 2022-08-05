@@ -35,6 +35,9 @@ func (res *Response) IsUnauthorized() bool {
 
 // readResponse reads the response from the socket connection and builds the MT5Response object
 func (m *Client) readResponse(cmd *Command) (*Response, error) {
+	if cmd.Command == constants.CMD_CLOSE {
+		return nil, nil
+	}
 	bufferMeta := new(bytes.Buffer)
 	bytesRead, err := io.CopyN(bufferMeta, m.conn, constants.META_SIZE)
 	if err != nil || bytesRead != constants.META_SIZE {
@@ -44,6 +47,10 @@ func (m *Client) readResponse(cmd *Command) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	if response.BodySize == 0 && response.CommandCount > constants.MAX_COMMANDS {
+		return nil, constants.ErrDisconnected
+	}
+
 	responseStr := ""
 	for readBytes := 0; readBytes < response.BodySize; {
 		bufferResponse := new(strings.Builder)

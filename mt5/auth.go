@@ -14,6 +14,8 @@ func (m *Client) Auth() error {
 		return nil
 	}
 
+	m.commandCount = 0
+
 	if !m.config.isEncryptMethodKnown() {
 		return fmt.Errorf("unknown encryption method: %s", m.config.CryptMethod)
 	}
