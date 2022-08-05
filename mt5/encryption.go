@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+
+	"github.com/HimanshuM/go-mt5/constants"
 )
 
 // parseHexString parses a hex string into string built from decimal byte array
@@ -15,7 +17,7 @@ func parseHexString(srvRand string) (string, error) {
 		hexStr := string(hexRune)
 		decimal, err := strconv.ParseInt(hexStr, 16, 32)
 		if err != nil {
-			return "", fmt.Errorf("failed to parse %s: %v", PARAM_AUTH_SRV_RAND, err)
+			return "", fmt.Errorf("failed to parse %s: %v", constants.PARAM_AUTH_SRV_RAND, err)
 		}
 		srvRandByteArr = append(srvRandByteArr, byte(decimal))
 	}

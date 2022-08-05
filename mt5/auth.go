@@ -3,10 +3,13 @@ package mt5
 import (
 	"crypto/md5"
 	"fmt"
+
+	"github.com/HimanshuM/go-mt5/constants"
+	"github.com/HimanshuM/go-mt5/encoding"
 )
 
 // Auth performs authorization with the MT5 server
-func (m *MT5) Auth() error {
+func (m *Client) Auth() error {
 	if m.connected {
 		return nil
 	}
@@ -18,9 +21,9 @@ func (m *MT5) Auth() error {
 	if err != nil {
 		return err
 	}
-	srvRand, found := resAuthStart.Parameters[PARAM_AUTH_SRV_RAND]
+	srvRand, found := resAuthStart.Parameters[constants.PARAM_AUTH_SRV_RAND]
 	if !found {
-		return fmt.Errorf("response param %s not found in response", PARAM_AUTH_SRV_RAND)
+		return fmt.Errorf("response param %s not found in response", constants.PARAM_AUTH_SRV_RAND)
 	}
 	passwordHash, err := m.getAuthHash(srvRand.(string))
 	if err != nil {
@@ -36,8 +39,8 @@ func (m *MT5) Auth() error {
 		return err
 	}
 	if validResponse {
-		if randomCrypt, present := resAuthAnswer.Parameters[PARAM_AUTH_CRYPT_RAND]; !present {
-			return fmt.Errorf("auth answer response does not contain %s", PARAM_AUTH_CRYPT_RAND)
+		if randomCrypt, present := resAuthAnswer.Parameters[constants.PARAM_AUTH_CRYPT_RAND]; !present {
+			return fmt.Errorf("auth answer response does not contain %s", constants.PARAM_AUTH_CRYPT_RAND)
 		} else {
 			m.randomCrypt = randomCrypt.(string)
 		}
@@ -47,28 +50,28 @@ func (m *MT5) Auth() error {
 }
 
 // isEncryptMethodKnown checks if the encryption method is implemented
-func (c *MT5Config) isEncryptMethodKnown() bool {
-	return c.CryptMethod == CRYPT_METHOD_DEFAULT || c.CryptMethod == CRYPT_METHOD_NONE
+func (c *Config) isEncryptMethodKnown() bool {
+	return c.CryptMethod == constants.CRYPT_METHOD_DEFAULT || c.CryptMethod == constants.CRYPT_METHOD_NONE
 }
 
 // sendAuthStart sends the AUTH_START command to the MT5 server
-func (m *MT5) sendAuthStart() (*MT5Response, error) {
-	cmd := &MT5Command{
-		Command: CMD_AUTH_START,
+func (m *Client) sendAuthStart() (*Response, error) {
+	cmd := &Command{
+		Command: constants.CMD_AUTH_START,
 		Parameters: map[string]interface{}{
-			"VERSION":      API_VERSION,
-			"AGENT":        WORD_API,
+			"VERSION":      constants.API_VERSION,
+			"AGENT":        constants.WORD_API,
 			"LOGIN":        m.config.Username,
-			"TYPE":         WORD_MANAGER,
+			"TYPE":         constants.WORD_MANAGER,
 			"CRYPT_METHOD": m.config.CryptMethod,
 		},
 	}
 	response, err := m.IssueCommand(cmd)
 	if err != nil {
-		return nil, fmt.Errorf("Auth failed at %s: %v", CMD_AUTH_START, err)
+		return nil, fmt.Errorf("Auth failed at %s: %v", constants.CMD_AUTH_START, err)
 	}
-	if response.CommandName != CMD_AUTH_START {
-		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", CMD_AUTH_START, len(CMD_AUTH_START), response.CommandName, len(response.CommandName))
+	if response.CommandName != constants.CMD_AUTH_START {
+		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", constants.CMD_AUTH_START, len(constants.CMD_AUTH_START), response.CommandName, len(response.CommandName))
 	}
 	if response.ReturnCode != 0 {
 		return nil, fmt.Errorf("authorization failed: %v", response.ReturnValue)
@@ -77,20 +80,20 @@ func (m *MT5) sendAuthStart() (*MT5Response, error) {
 }
 
 // sendAuthAnswer sends AUTH_ANSWER command to the MT5 server
-func (m *MT5) sendAuthAnswer(passwordHash string, randomHex string) (*MT5Response, error) {
-	cmd := &MT5Command{
-		Command: CMD_AUTH_ANSWER,
+func (m *Client) sendAuthAnswer(passwordHash string, randomHex string) (*Response, error) {
+	cmd := &Command{
+		Command: constants.CMD_AUTH_ANSWER,
 		Parameters: map[string]interface{}{
-			PARAM_AUTH_SRV_RAND_ANSWER: passwordHash,
-			PARAM_AUTH_CLI_RAND:        randomHex,
+			constants.PARAM_AUTH_SRV_RAND_ANSWER: passwordHash,
+			constants.PARAM_AUTH_CLI_RAND:        randomHex,
 		},
 	}
 	response, err := m.IssueCommand(cmd)
 	if err != nil {
-		return nil, fmt.Errorf("auth failed at %s: %v", CMD_AUTH_ANSWER, err)
+		return nil, fmt.Errorf("auth failed at %s: %v", constants.CMD_AUTH_ANSWER, err)
 	}
-	if response.CommandName != CMD_AUTH_ANSWER {
-		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", CMD_AUTH_ANSWER, len(CMD_AUTH_ANSWER), response.CommandName, len(response.CommandName))
+	if response.CommandName != constants.CMD_AUTH_ANSWER {
+		return nil, fmt.Errorf("response of %s (%d) is invalid: %s (%d)", constants.CMD_AUTH_ANSWER, len(constants.CMD_AUTH_ANSWER), response.CommandName, len(response.CommandName))
 	}
 	if response.ReturnCode != 0 {
 		return nil, fmt.Errorf("authorization failed: %v", response.ReturnValue)
@@ -99,13 +102,13 @@ func (m *MT5) sendAuthAnswer(passwordHash string, randomHex string) (*MT5Respons
 }
 
 // getAuthHash returns an MD5 hash of the password with a given hex string
-func (m *MT5) getAuthHash(hexString string) (string, error) {
-	utf16LEPassword, err := ToUTF16LE(m.config.Password)
+func (m *Client) getAuthHash(hexString string) (string, error) {
+	utf16LEPassword, err := encoding.ToUTF16LE(m.config.Password)
 	if err != nil {
 		return "", err
 	}
 	passwordHash := md5.Sum([]byte(utf16LEPassword))
-	saltedPassword := string(passwordHash[:]) + WORD_API
+	saltedPassword := string(passwordHash[:]) + constants.WORD_API
 	saltedPasswordHash := md5.Sum([]byte(saltedPassword))
 	parsedHexString, err := parseHexString(hexString)
 	if err != nil {
@@ -121,10 +124,10 @@ func (m *MT5) getAuthHash(hexString string) (string, error) {
 }
 
 // validateAuthAnswer validates the CLI_RAND_ANSWER against the password hash using CLI_RAND
-func (m *MT5) validateAuthAnswer(resAuthAnswer *MT5Response, randomHex string) (bool, error) {
+func (m *Client) validateAuthAnswer(resAuthAnswer *Response, randomHex string) (bool, error) {
 	passwordHash, err := m.getAuthHash(randomHex)
 	if err != nil {
 		return false, fmt.Errorf("failed to validate the auth answer: %v", err)
 	}
-	return passwordHash == resAuthAnswer.Parameters[PARAM_AUTH_CLI_RAND_ANSWER], nil
+	return passwordHash == resAuthAnswer.Parameters[constants.PARAM_AUTH_CLI_RAND_ANSWER], nil
 }

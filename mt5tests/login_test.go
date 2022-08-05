@@ -9,8 +9,8 @@ import (
 )
 
 func testLogin(t *testing.T) {
-	mt = &mt5.MT5{}
-	err := mt.Init(&mt5.MT5Config{
+	mt = &mt5.Client{}
+	err := mt.Init(&mt5.Config{
 		Host:        os.Getenv("MT5_HOST"),
 		Port:        os.Getenv("MT5_PORT"),
 		Username:    os.Getenv("MT5_USERNAME"),

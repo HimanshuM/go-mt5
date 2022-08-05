@@ -4,20 +4,22 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/HimanshuM/go-mt5/constants"
+	"github.com/HimanshuM/go-mt5/encoding"
 	"github.com/sirupsen/logrus"
 )
 
-// MT5 structure is the base structure for interacting with MT5 server
-type MT5 struct {
-	config       *MT5Config
+// Client structure is the base structure for interacting with Client server
+type Client struct {
+	config       *Config
 	conn         *net.TCPConn
 	commandCount int
 	connected    bool
 	randomCrypt  string
 }
 
-// MT5Config structure allows to specify the MT5 server configuration and manager credentials
-type MT5Config struct {
+// Config structure allows to specify the MT5 server configuration and manager credentials
+type Config struct {
 	Host        string
 	Port        string
 	Username    string
@@ -28,18 +30,18 @@ type MT5Config struct {
 }
 
 // Init initializes the connection with MT5 server and performs auth
-func (m *MT5) Init(config *MT5Config) error {
+func (m *Client) Init(config *Config) error {
 	m.connected = false
 	m.config = config
 	m.commandCount = 0
 	m.Connect()
 	if m.config.CryptMethod == "" {
-		m.config.CryptMethod = CRYPT_METHOD_DEFAULT
+		m.config.CryptMethod = constants.CRYPT_METHOD_DEFAULT
 	}
 	return m.Auth()
 }
 
-func (m *MT5) getDomain() string {
+func (m *Client) getDomain() string {
 	if m.config.domain != "" {
 		return m.config.domain
 	}
@@ -51,7 +53,7 @@ func (m *MT5) getDomain() string {
 }
 
 // Connect sets up a socket connection with the MT5 server using MT5Config
-func (m *MT5) Connect() error {
+func (m *Client) Connect() error {
 	remoteAddr, err := net.ResolveTCPAddr("tcp4", m.getDomain())
 	if err != nil {
 		logrus.Errorf("resolve tcp address error: %v", err)
@@ -67,20 +69,20 @@ func (m *MT5) Connect() error {
 }
 
 // IssueCommand sends a command to the MT5 server specified using MT5Command struct
-func (m *MT5) IssueCommand(cmd *MT5Command) (*MT5Response, error) {
+func (m *Client) IssueCommand(cmd *Command) (*Response, error) {
 	logrus.Debugf("executing command: %s", cmd.Command)
 	m.commandCount++
-	if m.commandCount > MAX_COMMANDS {
+	if m.commandCount > constants.MAX_COMMANDS {
 		m.commandCount = 1
 	}
-	cmdString, err := ToUTF16LE(cmd.toString())
+	cmdString, err := encoding.ToUTF16LE(cmd.toString())
 	logrus.Debugf("cmd string (%d): %s", len(cmdString), cmdString)
 	if err != nil {
 		return nil, err
 	}
-	format := PACKET_FORMAT
-	if cmd.Command == CMD_AUTH_START {
-		format = PREFIX_API
+	format := constants.PACKET_FORMAT
+	if cmd.Command == constants.CMD_AUTH_START {
+		format = constants.PREFIX_API
 	}
 	cmdString = fmt.Sprintf(format+"0%s", len(cmdString), m.commandCount, cmdString)
 	logrus.Debugf("cmd (%d): %s", len(cmdString), cmdString)

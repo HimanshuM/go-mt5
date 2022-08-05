@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-// MT5Command struct defines a command that can be sent to the MT5 server
-type MT5Command struct {
+// Command struct defines a command that can be sent to the MT5 server
+type Command struct {
 	Command         string
 	Encrypted       bool
 	Parameters      map[string]interface{}
@@ -15,7 +15,7 @@ type MT5Command struct {
 }
 
 // toString strigfyies the MT5Command into raw command string that would be sent the MT5 server
-func (c *MT5Command) toString() string {
+func (c *Command) toString() string {
 	i := 0
 	components := make([]string, len(c.Parameters))
 	for k, v := range c.Parameters {
@@ -27,7 +27,7 @@ func (c *MT5Command) toString() string {
 }
 
 // sanitizeValue sanitizes the command parameter values
-func (c *MT5Command) sanitizeValue(value string) string {
+func (c *Command) sanitizeValue(value string) string {
 	value = strings.Replace(value, "\\", "\\\\", -1)
 	value = strings.Replace(value, "=", "\\=", -1)
 	value = strings.Replace(value, "|", "\\|", -1)

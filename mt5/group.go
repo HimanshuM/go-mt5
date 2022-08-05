@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+
+	"github.com/HimanshuM/go-mt5/constants"
 )
 
 // GetTotalGroups gets the total groups from MT5
-func (m *MT5) GetTotalGroups() (int, error) {
-	cmd := &MT5Command{
-		Command: CMD_GROUP_TOTAL,
+func (m *Client) GetTotalGroups() (int, error) {
+	cmd := &Command{
+		Command: constants.CMD_GROUP_TOTAL,
 	}
 	res, err := m.IssueCommand(cmd)
 	if err != nil {
@@ -18,7 +20,7 @@ func (m *MT5) GetTotalGroups() (int, error) {
 	if !res.Okay() {
 		return -1, fmt.Errorf("error getting total groups: %v", res.ReturnValue)
 	}
-	totalStr, present := res.Parameters[PARAM_TOTAL].(string)
+	totalStr, present := res.Parameters[constants.PARAM_TOTAL].(string)
 	if !present {
 		return -1, fmt.Errorf("invalid response for total groups")
 	}
@@ -75,11 +77,11 @@ type Group struct {
 }
 
 // GetGroupByName gets a group by name
-func (m *MT5) GetGroupByName(groupName string) (*Group, error) {
-	cmd := &MT5Command{
-		Command: CMD_GROUP_GET,
+func (m *Client) GetGroupByName(groupName string) (*Group, error) {
+	cmd := &Command{
+		Command: constants.CMD_GROUP_GET,
 		Parameters: map[string]interface{}{
-			PARAM_GROUP: groupName,
+			constants.PARAM_GROUP: groupName,
 		},
 		ResponseHasBody: true,
 	}
@@ -98,11 +100,11 @@ func (m *MT5) GetGroupByName(groupName string) (*Group, error) {
 }
 
 // GetGroupByIndex searches for group within MT5 platform
-func (m *MT5) GetGroupByIndex(index int) (*Group, error) {
-	cmd := &MT5Command{
-		Command: CMD_GROUP_INDEX,
+func (m *Client) GetGroupByIndex(index int) (*Group, error) {
+	cmd := &Command{
+		Command: constants.CMD_GROUP_INDEX,
 		Parameters: map[string]interface{}{
-			PARAM_INDEX: index,
+			constants.PARAM_INDEX: index,
 		},
 		ResponseHasBody: true,
 	}
@@ -121,7 +123,7 @@ func (m *MT5) GetGroupByIndex(index int) (*Group, error) {
 }
 
 // GetAllGroups gets all groups
-func (m *MT5) GetAllGroups() ([]*Group, error) {
+func (m *Client) GetAllGroups() ([]*Group, error) {
 	total, err := m.GetTotalGroups()
 	if err != nil {
 		return nil, err

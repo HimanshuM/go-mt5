@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var mt *mt5.MT5
+var mt *mt5.Client
 
 func TestMain(t *testing.T) {
 	logrus.SetLevel(logrus.DebugLevel)
@@ -34,4 +34,14 @@ func TestMain(t *testing.T) {
 
 	// Time tests
 	t.Run("testTimestampGet", testTimestampGet)
+
+	// Tick tests
+	t.Run("testGetLastTick", testGetLastTick)
+	t.Run("testGetLastTicksMultiple", testGetLastTicksMultiple)
+	t.Run("testGetTickStats", testGetTickStats)
+
+	// Group tests
+	t.Run("testGetTotalGroups", testGetTotalGroups)
+	t.Run("testGetGroupByName", testGetGroupByName)
+	t.Run("testGetAllGroups", testGetAllGroups)
 }

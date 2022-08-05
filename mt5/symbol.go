@@ -3,6 +3,8 @@ package mt5
 import (
 	"encoding/json"
 	"fmt"
+
+	"github.com/HimanshuM/go-mt5/constants"
 )
 
 type Session struct {
@@ -130,9 +132,9 @@ type Symbol struct {
 }
 
 // GetAllSymbols returns all available symbols
-func (m *MT5) GetAllSymbols() ([]string, error) {
-	cmd := &MT5Command{
-		Command:         CMD_SYMBOL_LIST,
+func (m *Client) GetAllSymbols() ([]string, error) {
+	cmd := &Command{
+		Command:         constants.CMD_SYMBOL_LIST,
 		ResponseHasBody: true,
 	}
 	res, err := m.IssueCommand(cmd)
@@ -150,11 +152,11 @@ func (m *MT5) GetAllSymbols() ([]string, error) {
 }
 
 // SearchSymbols searches for symbols within MT5 platform
-func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
-	cmd := &MT5Command{
-		Command: CMD_SYMBOL_GET,
+func (m *Client) GetSymbol(symbolName string) (*Symbol, error) {
+	cmd := &Command{
+		Command: constants.CMD_SYMBOL_GET,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL: symbolName,
+			constants.PARAM_SYMBOL: symbolName,
 		},
 		ResponseHasBody: true,
 	}
@@ -173,11 +175,11 @@ func (m *MT5) GetSymbol(symbolName string) (*Symbol, error) {
 }
 
 // GetSymbolByIndex gets a symbol by index
-func (m *MT5) GetSymbolByIndex(index int) (*Symbol, error) {
-	cmd := &MT5Command{
-		Command: CMD_SYMBOL_NEXT,
+func (m *Client) GetSymbolByIndex(index int) (*Symbol, error) {
+	cmd := &Command{
+		Command: constants.CMD_SYMBOL_NEXT,
 		Parameters: map[string]interface{}{
-			PARAM_INDEX: index,
+			constants.PARAM_INDEX: index,
 		},
 		ResponseHasBody: true,
 	}

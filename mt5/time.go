@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/HimanshuM/go-mt5/constants"
 )
 
 type ServerTimeSetting struct {
@@ -22,9 +24,9 @@ type ServerTime struct {
 }
 
 // GetServerTimeSettings gets the time settings from the MT5 server
-func (m *MT5) GetServerTimeSettings() (*ServerTimeSetting, error) {
-	cmd := &MT5Command{
-		Command:         CMD_SERVER_TIME_SETTING,
+func (m *Client) GetServerTimeSettings() (*ServerTimeSetting, error) {
+	cmd := &Command{
+		Command:         constants.CMD_SERVER_TIME_SETTING,
 		ResponseHasBody: true,
 	}
 	res, err := m.IssueCommand(cmd)
@@ -32,7 +34,7 @@ func (m *MT5) GetServerTimeSettings() (*ServerTimeSetting, error) {
 		return nil, err
 	}
 	if res.IsUnauthorized() {
-		return nil, ErrUnauthorized
+		return nil, constants.ErrUnauthorized
 	}
 	if !res.Okay() {
 		return nil, fmt.Errorf("error getting server time: %v", res.ReturnValue)
@@ -42,21 +44,21 @@ func (m *MT5) GetServerTimeSettings() (*ServerTimeSetting, error) {
 		return nil, fmt.Errorf("error parsing JSON response for server time settings: %v", err)
 	}
 	serverTimeSettings := &ServerTimeSetting{
-		TimeServer: responseMap[PARAM_SERVER_TIME_TIMESERVER].(string),
-		Days:       responseMap[PARAM_SERVER_TIME_DAYS].([][]string),
+		TimeServer: responseMap[constants.PARAM_SERVER_TIME_TIMESERVER].(string),
+		Days:       responseMap[constants.PARAM_SERVER_TIME_DAYS].([][]string),
 	}
-	if daylight, err := strconv.ParseBool(responseMap[PARAM_SERVER_TIME_DAYLIGHT].(string)); err != nil {
-		return nil, fmt.Errorf("invalid response %s for Daylight: %v", responseMap[PARAM_SERVER_TIME_DAYLIGHT], err)
+	if daylight, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT].(string)); err != nil {
+		return nil, fmt.Errorf("invalid response %s for Daylight: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT], err)
 	} else {
 		serverTimeSettings.Daylight = daylight
 	}
-	if daylightState, err := strconv.ParseBool(responseMap[PARAM_SERVER_TIME_DAYLIGHTSTATE].(string)); err != nil {
-		return nil, fmt.Errorf("invalid response %s for DaylightState: %v", responseMap[PARAM_SERVER_TIME_DAYLIGHTSTATE], err)
+	if daylightState, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE].(string)); err != nil {
+		return nil, fmt.Errorf("invalid response %s for DaylightState: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE], err)
 	} else {
 		serverTimeSettings.DaylightState = daylightState
 	}
-	if tz, err := strconv.Atoi(responseMap[PARAM_SERVER_TIME_TIMEZONE].(string)); err != nil {
-		return nil, fmt.Errorf("invalid response %s for TimeZone: %v", responseMap[PARAM_SERVER_TIME_TIMEZONE], err)
+	if tz, err := strconv.Atoi(responseMap[constants.PARAM_SERVER_TIME_TIMEZONE].(string)); err != nil {
+		return nil, fmt.Errorf("invalid response %s for TimeZone: %v", responseMap[constants.PARAM_SERVER_TIME_TIMEZONE], err)
 	} else {
 		serverTimeSettings.TimeZone = tz
 	}
@@ -64,9 +66,9 @@ func (m *MT5) GetServerTimeSettings() (*ServerTimeSetting, error) {
 }
 
 // GetServerTime gets the current time of the MT5 server
-func (m *MT5) GetServerTime() (*ServerTime, error) {
+func (m *Client) GetServerTime() (*ServerTime, error) {
 	timeSettings, err := m.GetServerTimeSettings()
-	if err == ErrUnauthorized {
+	if err == constants.ErrUnauthorized {
 		timeSettings = &ServerTimeSetting{
 			TimeZone: 0,
 		}
@@ -74,8 +76,8 @@ func (m *MT5) GetServerTime() (*ServerTime, error) {
 		return nil, err
 	}
 
-	cmd := &MT5Command{
-		Command: CMD_SERVER_TIME,
+	cmd := &Command{
+		Command: constants.CMD_SERVER_TIME,
 	}
 	res, err := m.IssueCommand(cmd)
 	if err != nil {
@@ -84,7 +86,7 @@ func (m *MT5) GetServerTime() (*ServerTime, error) {
 	if !res.Okay() {
 		return nil, fmt.Errorf("error getting server time: %v", res.ReturnValue)
 	}
-	timeParameter, present := res.Parameters[PARAM_SERVER_TIME]
+	timeParameter, present := res.Parameters[constants.PARAM_SERVER_TIME]
 	if !present {
 		return nil, fmt.Errorf("invalid response for server time query")
 	}

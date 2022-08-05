@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/HimanshuM/go-mt5/constants"
 )
 
 type Tick struct {
@@ -73,13 +75,13 @@ type LastTickStats struct {
 	TickStats     []*TickStats
 }
 
-func (m *MT5) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
+func (m *Client) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 	symbolNames := strings.Join(symbols, ",")
-	cmd := &MT5Command{
-		Command: CMD_TICK_LAST,
+	cmd := &Command{
+		Command: constants.CMD_TICK_LAST,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL:        symbolNames,
-			PARAM_TICK_TRANS_ID: id,
+			constants.PARAM_SYMBOL:        symbolNames,
+			constants.PARAM_TICK_TRANS_ID: id,
 		},
 		ResponseHasBody: true,
 	}
@@ -94,7 +96,7 @@ func (m *MT5) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 	if err := json.Unmarshal([]byte(res.Data), &ticks); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
@@ -106,14 +108,14 @@ func (m *MT5) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 	}, nil
 }
 
-func (m *MT5) GetLastTickByGroup(id int, group string, symbols ...string) (*LastTicks, error) {
+func (m *Client) GetLastTickByGroup(id int, group string, symbols ...string) (*LastTicks, error) {
 	symbolNames := strings.Join(symbols, ",")
-	cmd := &MT5Command{
-		Command: CMD_TICK_LAST_BY_GROUP,
+	cmd := &Command{
+		Command: constants.CMD_TICK_LAST_BY_GROUP,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL:        symbolNames,
-			PARAM_TICK_TRANS_ID: id,
-			PARAM_GROUP:         group,
+			constants.PARAM_SYMBOL:        symbolNames,
+			constants.PARAM_TICK_TRANS_ID: id,
+			constants.PARAM_GROUP:         group,
 		},
 		ResponseHasBody: true,
 	}
@@ -128,7 +130,7 @@ func (m *MT5) GetLastTickByGroup(id int, group string, symbols ...string) (*Last
 	if err := json.Unmarshal([]byte(res.Data), &ticks); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
@@ -140,13 +142,13 @@ func (m *MT5) GetLastTickByGroup(id int, group string, symbols ...string) (*Last
 	}, nil
 }
 
-func (m *MT5) GetTickStatistics(id int, symbols ...string) (*LastTickStats, error) {
+func (m *Client) GetTickStatistics(id int, symbols ...string) (*LastTickStats, error) {
 	symbolNames := strings.Join(symbols, ",")
-	cmd := &MT5Command{
-		Command: CMD_TICK_STATS,
+	cmd := &Command{
+		Command: constants.CMD_TICK_STATS,
 		Parameters: map[string]interface{}{
-			PARAM_SYMBOL:        symbolNames,
-			PARAM_TICK_TRANS_ID: id,
+			constants.PARAM_SYMBOL:        symbolNames,
+			constants.PARAM_TICK_TRANS_ID: id,
 		},
 		ResponseHasBody: true,
 	}
@@ -161,7 +163,7 @@ func (m *MT5) GetTickStatistics(id int, symbols ...string) (*LastTickStats, erro
 	if err := json.Unmarshal([]byte(res.Data), &tickStats); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
