@@ -119,5 +119,8 @@ const (
 	WORD_MANAGER         = "MANAGER"
 	CRYPT_METHOD_DEFAULT = "AES256OFB"
 	CRYPT_METHOD_NONE    = "NONE"
-	PING_DURATION        = time.Second * 20
+	// Defines how long a connection stays alive. Not used anywhere in the package
+	KEEP_ALIVE_DURATION = time.Second * 180
+	// Defines how frequently ping command should be called. Available for use by package users. Not used anywhere in the package
+	PING_DURATION = time.Second * 20
 )
