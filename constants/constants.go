@@ -33,6 +33,8 @@ const (
 	CmdUserAdd = "USER_ADD"
 
 	// Trade commands
+	CmdTradeRequest = "DEALER_SEND"
+	CmdTradeResult  = "DEALER_UPDATES"
 	CmdTradeBalance = "TRADE_BALANCE"
 
 	// Symbol commands
@@ -51,6 +53,7 @@ const (
 	ParamGroup      = "GROUP"
 	ParamIndex      = "INDEX"
 	ParamTotal      = "TOTAL"
+	ParamID         = "ID"
 
 	// Authorization parameters
 	ParamAuthSrvRand       = "SRV_RAND"
@@ -103,6 +106,25 @@ const (
 	ParamTradeComment     = "COMMENT"
 	ParamTradeCheckMargin = "CHECK_MARGIN"
 	ParamTradeTicket      = "TICKET"
+
+	ParamTradeMarketOrder    = "200"
+	ParamTradeLimitOrder     = "201"
+	ParamTradeModifyPosition = "202"
+	ParamTradeModifyOrder    = "202"
+	ParamTradeCancelOrder    = "204"
+
+	ParamTradeBuyOrder           = "0"
+	ParamTradeSellOrder          = "1"
+	ParamTradeBuyLimitOrder      = "2"
+	ParamTradeSellLimitOrder     = "3"
+	ParamTradeBuyStopOrder       = "4"
+	ParamTradeSellStopOrder      = "5"
+	ParamTradeBuyStopLimitOrder  = "6"
+	ParamTradeSellStopLimitOrder = "7"
+	ParamTradeCloseByOrder       = "8"
+
+	ParamTradeResult = "result"
+	ParamTradeAnswer = "answer"
 
 	// Symbol parameters
 	ParamSymbol = "SYMBOL"
