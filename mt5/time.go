@@ -26,7 +26,7 @@ type ServerTime struct {
 // GetServerTimeSettings gets the time settings from the MT5 server
 func (m *Client) GetServerTimeSettings() (*ServerTimeSetting, error) {
 	cmd := &Command{
-		Command:         constants.CMD_SERVER_TIME_SETTING,
+		Command:         constants.CmdServerTimeSetting,
 		ResponseHasBody: true,
 	}
 	res, err := m.IssueCommand(cmd)
@@ -44,24 +44,24 @@ func (m *Client) GetServerTimeSettings() (*ServerTimeSetting, error) {
 		return nil, fmt.Errorf("error parsing JSON response for server time settings: %v", err)
 	}
 	serverTimeSettings := &ServerTimeSetting{
-		TimeServer: responseMap[constants.PARAM_SERVER_TIME_TIMESERVER].(string),
-		Days:       responseMap[constants.PARAM_SERVER_TIME_DAYS].([][]string),
+		TimeServer: responseMap[constants.ParamServerTimeTimeServer].(string),
+		Days:       responseMap[constants.ParamServerTimeDays].([][]string),
 	}
-	daylight, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT].(string))
+	daylight, err := strconv.ParseBool(responseMap[constants.ParamServerTimeDaylight].(string))
 	if err != nil {
-		return nil, fmt.Errorf("invalid response %s for Daylight: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHT], err)
+		return nil, fmt.Errorf("invalid response %s for Daylight: %v", responseMap[constants.ParamServerTimeDaylight], err)
 	}
 	serverTimeSettings.Daylight = daylight
 
-	daylightState, err := strconv.ParseBool(responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE].(string))
+	daylightState, err := strconv.ParseBool(responseMap[constants.ParamServerTimeDaylightState].(string))
 	if err != nil {
-		return nil, fmt.Errorf("invalid response %s for DaylightState: %v", responseMap[constants.PARAM_SERVER_TIME_DAYLIGHTSTATE], err)
+		return nil, fmt.Errorf("invalid response %s for DaylightState: %v", responseMap[constants.ParamServerTimeDaylightState], err)
 	}
 	serverTimeSettings.DaylightState = daylightState
 
-	tz, err := strconv.Atoi(responseMap[constants.PARAM_SERVER_TIME_TIMEZONE].(string))
+	tz, err := strconv.Atoi(responseMap[constants.ParamServerTimeTimezone].(string))
 	if err != nil {
-		return nil, fmt.Errorf("invalid response %s for TimeZone: %v", responseMap[constants.PARAM_SERVER_TIME_TIMEZONE], err)
+		return nil, fmt.Errorf("invalid response %s for TimeZone: %v", responseMap[constants.ParamServerTimeTimezone], err)
 	}
 	serverTimeSettings.TimeZone = tz
 
@@ -80,7 +80,7 @@ func (m *Client) GetServerTime() (*ServerTime, error) {
 	}
 
 	cmd := &Command{
-		Command: constants.CMD_SERVER_TIME,
+		Command: constants.CmdServerTime,
 	}
 	res, err := m.IssueCommand(cmd)
 	if err != nil {
@@ -89,7 +89,7 @@ func (m *Client) GetServerTime() (*ServerTime, error) {
 	if !res.Okay() {
 		return nil, fmt.Errorf("error getting server time: %v", res.ReturnValue)
 	}
-	timeParameter, present := res.Parameters[constants.PARAM_SERVER_TIME]
+	timeParameter, present := res.Parameters[constants.ParamServerTime]
 	if !present {
 		return nil, fmt.Errorf("invalid response for server time query")
 	}

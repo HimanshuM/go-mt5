@@ -11,7 +11,7 @@ import (
 var deposit = 100
 
 func testBalanceDeposit(t *testing.T) {
-	trade := &mt5.Trade{
+	trade := &mt5.Balance{
 		Login:       os.Getenv("USER_LOGIN"),
 		Amount:      int64(deposit),
 		Comment:     "Deposit test Go wrapper",
@@ -23,7 +23,7 @@ func testBalanceDeposit(t *testing.T) {
 }
 
 func testBalanceWithdrawSuccess(t *testing.T) {
-	trade := &mt5.Trade{
+	trade := &mt5.Balance{
 		Login:       os.Getenv("USER_LOGIN"),
 		Amount:      -50,
 		Comment:     "Withdraw test Go wrapper",
@@ -35,7 +35,7 @@ func testBalanceWithdrawSuccess(t *testing.T) {
 }
 
 func testBalanceWithdrawFail(t *testing.T) {
-	trade := &mt5.Trade{
+	trade := &mt5.Balance{
 		Login:       os.Getenv("USER_LOGIN"),
 		Amount:      -150,
 		Comment:     "Withdraw test Go wrapper fail",
@@ -48,7 +48,7 @@ func testBalanceWithdrawFail(t *testing.T) {
 }
 
 func testBalanceWithdrawNoCheck(t *testing.T) {
-	trade := &mt5.Trade{
+	trade := &mt5.Balance{
 		Login:       os.Getenv("USER_LOGIN"),
 		Amount:      -150,
 		Comment:     "Withdraw test Go wrapper no check",

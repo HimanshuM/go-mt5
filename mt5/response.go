@@ -35,19 +35,19 @@ func (res *Response) IsUnauthorized() bool {
 
 // readResponse reads the response from the socket connection and builds the MT5Response object
 func (m *Client) readResponse(cmd *Command) (*Response, error) {
-	if cmd.Command == constants.CMD_CLOSE {
+	if cmd.Command == constants.CmdClose {
 		return nil, nil
 	}
 	bufferMeta := new(bytes.Buffer)
-	bytesRead, err := io.CopyN(bufferMeta, m.conn, constants.META_SIZE)
-	if err != nil || bytesRead != constants.META_SIZE {
+	bytesRead, err := io.CopyN(bufferMeta, m.conn, constants.MetaSize)
+	if err != nil || bytesRead != constants.MetaSize {
 		return nil, fmt.Errorf("invalid response received: %s", bufferMeta.String())
 	}
 	response, err := parseMeta(bufferMeta.String())
 	if err != nil {
 		return nil, err
 	}
-	if response.BodySize == 0 && response.CommandCount > constants.MAX_COMMANDS {
+	if response.BodySize == 0 && response.CommandCount > constants.MaxCommands {
 		return nil, constants.ErrDisconnected
 	}
 
@@ -86,7 +86,7 @@ func (m *Client) readResponse(cmd *Command) (*Response, error) {
 
 // parseMeta parses the initial 9 bytes of the response that help parse the response
 func parseMeta(response string) (*Response, error) {
-	meta := response[0:constants.META_SIZE]
+	meta := response[0:constants.MetaSize]
 	bodySize, err := strconv.ParseInt(meta[0:4], 16, 32)
 	if err != nil {
 		return nil, fmt.Errorf("error decoding body size from response: %v", err)
@@ -119,7 +119,7 @@ func (res *Response) parseParameters(components []string) error {
 		if len(components) <= 1 {
 			continue
 		}
-		if components[0] == constants.PARAM_RETURN_CODE {
+		if components[0] == constants.ParamReturnCode {
 			err := res.parseReturnString(components[1])
 			if err != nil {
 				return err

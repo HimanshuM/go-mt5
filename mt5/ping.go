@@ -8,7 +8,7 @@ import (
 // It is recommended to send this command every 20sec for connections that stay idle
 func (m *Client) Ping() error {
 	cmd := &Command{
-		Command: constants.CMD_PING,
+		Command: constants.CmdPing,
 	}
 	res, err := m.IssueCommand(cmd)
 	if err != nil {

@@ -36,7 +36,7 @@ func (m *Client) Init(config *Config) error {
 	m.config = config
 	m.commandCount = 0
 	if m.config.CryptMethod == "" {
-		m.config.CryptMethod = constants.CRYPT_METHOD_DEFAULT
+		m.config.CryptMethod = constants.CryptMethodDefault
 	}
 	if config.RetryAttempts <= 0 {
 		config.RetryAttempts = 3
@@ -84,7 +84,7 @@ func (m *Client) Connect() error {
 // Close closes connection to MT5 server
 func (m *Client) Close() error {
 	cmd := &Command{
-		Command: constants.CMD_CLOSE,
+		Command: constants.CmdClose,
 	}
 	if _, err := m.retryCommand(cmd); err != nil {
 		logrus.Infof("Quit command returned error: %v", err)
@@ -113,7 +113,7 @@ func (m *Client) IssueCommand(cmd *Command) (*Response, error) {
 func (m *Client) retryCommand(cmd *Command) (*Response, error) {
 	logrus.Debugf("executing command: %s", cmd.Command)
 	m.commandCount++
-	if m.commandCount > constants.MAX_COMMANDS {
+	if m.commandCount > constants.MaxCommands {
 		m.commandCount = 1
 	}
 	cmdString, err := encoding.ToUTF16LE(cmd.toString())
@@ -121,9 +121,9 @@ func (m *Client) retryCommand(cmd *Command) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	format := constants.PACKET_FORMAT
-	if cmd.Command == constants.CMD_AUTH_START {
-		format = constants.PREFIX_API
+	format := constants.PacketFormat
+	if cmd.Command == constants.CmdAuthStart {
+		format = constants.PrefixAPI
 	}
 	cmdString = fmt.Sprintf(format+"0%s", len(cmdString), m.commandCount, cmdString)
 	logrus.Debugf("cmd (%d): %s", len(cmdString), cmdString)

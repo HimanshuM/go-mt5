@@ -11,7 +11,7 @@ import (
 // GetTotalGroups gets the total groups from MT5
 func (m *Client) GetTotalGroups() (int, error) {
 	cmd := &Command{
-		Command: constants.CMD_GROUP_TOTAL,
+		Command: constants.CmdGroupTotal,
 	}
 	res, err := m.IssueCommand(cmd)
 	if err != nil {
@@ -20,7 +20,7 @@ func (m *Client) GetTotalGroups() (int, error) {
 	if !res.Okay() {
 		return -1, fmt.Errorf("error getting total groups: %v", res.ReturnValue)
 	}
-	totalStr, present := res.Parameters[constants.PARAM_TOTAL].(string)
+	totalStr, present := res.Parameters[constants.ParamTotal].(string)
 	if !present {
 		return -1, fmt.Errorf("invalid response for total groups")
 	}
@@ -79,9 +79,9 @@ type Group struct {
 // GetGroupByName gets a group by name
 func (m *Client) GetGroupByName(groupName string) (*Group, error) {
 	cmd := &Command{
-		Command: constants.CMD_GROUP_GET,
+		Command: constants.CmdGroupGet,
 		Parameters: map[string]interface{}{
-			constants.PARAM_GROUP: groupName,
+			constants.ParamGroup: groupName,
 		},
 		ResponseHasBody: true,
 	}
@@ -102,9 +102,9 @@ func (m *Client) GetGroupByName(groupName string) (*Group, error) {
 // GetGroupByIndex searches for group within MT5 platform
 func (m *Client) GetGroupByIndex(index int) (*Group, error) {
 	cmd := &Command{
-		Command: constants.CMD_GROUP_INDEX,
+		Command: constants.CmdGroupIndex,
 		Parameters: map[string]interface{}{
-			constants.PARAM_INDEX: index,
+			constants.ParamIndex: index,
 		},
 		ResponseHasBody: true,
 	}

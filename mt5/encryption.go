@@ -17,7 +17,7 @@ func parseHexString(srvRand string) (string, error) {
 		hexStr := string(hexRune)
 		decimal, err := strconv.ParseInt(hexStr, 16, 32)
 		if err != nil {
-			return "", fmt.Errorf("failed to parse %s: %v", constants.PARAM_AUTH_SRV_RAND, err)
+			return "", fmt.Errorf("failed to parse %s: %v", constants.ParamAuthSrvRand, err)
 		}
 		srvRandByteArr = append(srvRandByteArr, byte(decimal))
 	}

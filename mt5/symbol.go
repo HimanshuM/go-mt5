@@ -134,7 +134,7 @@ type Symbol struct {
 // GetAllSymbols returns all available symbols
 func (m *Client) GetAllSymbols() ([]string, error) {
 	cmd := &Command{
-		Command:         constants.CMD_SYMBOL_LIST,
+		Command:         constants.CmdSymbolList,
 		ResponseHasBody: true,
 	}
 	res, err := m.IssueCommand(cmd)
@@ -154,9 +154,9 @@ func (m *Client) GetAllSymbols() ([]string, error) {
 // SearchSymbols searches for symbols within MT5 platform
 func (m *Client) GetSymbol(symbolName string) (*Symbol, error) {
 	cmd := &Command{
-		Command: constants.CMD_SYMBOL_GET,
+		Command: constants.CmdSymbolGet,
 		Parameters: map[string]interface{}{
-			constants.PARAM_SYMBOL: symbolName,
+			constants.ParamSymbol: symbolName,
 		},
 		ResponseHasBody: true,
 	}
@@ -177,9 +177,9 @@ func (m *Client) GetSymbol(symbolName string) (*Symbol, error) {
 // GetSymbolByIndex gets a symbol by index
 func (m *Client) GetSymbolByIndex(index int) (*Symbol, error) {
 	cmd := &Command{
-		Command: constants.CMD_SYMBOL_NEXT,
+		Command: constants.CmdSymbolNext,
 		Parameters: map[string]interface{}{
-			constants.PARAM_INDEX: index,
+			constants.ParamIndex: index,
 		},
 		ResponseHasBody: true,
 	}

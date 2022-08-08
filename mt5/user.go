@@ -67,7 +67,7 @@ func (m *Client) CreateUser(u *User) error {
 	logrus.Infof("body: %s", body)
 
 	cmd := &Command{
-		Command:         constants.CMD_USER_ADD,
+		Command:         constants.CmdUserAdd,
 		Parameters:      u.constructUserCreateParameters(),
 		ResponseHasBody: true,
 		Body:            body,
@@ -91,27 +91,27 @@ func (m *Client) CreateUser(u *User) error {
 // constructUserCreateParameters returns a map created from the MT5User
 func (u *User) constructUserCreateParameters() map[string]interface{} {
 	return map[string]interface{}{
-		constants.PARAM_USER_LOGIN:         u.Login,
-		constants.PARAM_USER_PASS_MAIN:     u.MainPassword,
-		constants.PARAM_USER_PASS_INVESTOR: u.InvestPassword,
-		constants.PARAM_USER_RIGHTS:        u.Rights,
-		constants.PARAM_USER_GROUP:         u.Group,
-		constants.PARAM_USER_NAME:          u.Name,
-		constants.PARAM_USER_COMPANY:       u.Company,
-		constants.PARAM_USER_LANGUAGE:      u.Country,
-		constants.PARAM_USER_CITY:          u.City,
-		constants.PARAM_USER_STATE:         u.State,
-		constants.PARAM_USER_ZIPCODE:       u.ZipCode,
-		constants.PARAM_USER_ADDRESS:       u.Address,
-		constants.PARAM_USER_PHONE:         u.Phone,
-		constants.PARAM_USER_EMAIL:         u.Email,
-		constants.PARAM_USER_ID:            u.ID,
-		constants.PARAM_USER_STATUS:        u.Status,
-		constants.PARAM_USER_COMMENT:       u.Comment,
-		constants.PARAM_USER_COLOR:         u.Color,
-		constants.PARAM_USER_PASS_PHONE:    u.PhonePassword,
-		constants.PARAM_USER_LEVERAGE:      u.Leverage,
-		constants.PARAM_USER_AGENT:         u.Agent,
+		constants.ParamUserLogin:        u.Login,
+		constants.ParamUserPassMain:     u.MainPassword,
+		constants.ParamUserPassInvestor: u.InvestPassword,
+		constants.ParamUserRights:       u.Rights,
+		constants.ParamUserGroup:        u.Group,
+		constants.ParamUserName:         u.Name,
+		constants.ParamUserCompany:      u.Company,
+		constants.ParamUserLanguage:     u.Country,
+		constants.ParamUserCity:         u.City,
+		constants.ParamUserState:        u.State,
+		constants.ParamUserZipCode:      u.ZipCode,
+		constants.ParamUserAddress:      u.Address,
+		constants.ParamUserPhone:        u.Phone,
+		constants.ParamUserEmail:        u.Email,
+		constants.ParamUserID:           u.ID,
+		constants.ParamUserStatus:       u.Status,
+		constants.ParamUserComment:      u.Comment,
+		constants.ParamUserColor:        u.Color,
+		constants.ParamUserPassPhone:    u.PhonePassword,
+		constants.ParamUserLeverage:     u.Leverage,
+		constants.ParamUserAgent:        u.Agent,
 	}
 }
 
@@ -134,31 +134,31 @@ func replaceUTF8Marker(source []byte) []byte {
 
 // fromJSON populates Login, Registration, LastAccess and LastPassChange fields from JSON
 func (u *User) fromJSON(userMap, parameters map[string]interface{}) error {
-	if login, present := parameters[constants.PARAM_USER_LOGIN]; present {
+	if login, present := parameters[constants.ParamUserLogin]; present {
 		if loginInt, err := strconv.Atoi(login.(string)); err != nil {
 			return fmt.Errorf("error parsing Login from response parameter: %v", err)
 		} else {
 			u.Login = loginInt
 		}
 	} else {
-		if login, err := strconv.Atoi(userMap[constants.PARAM_USER_LOGIN_JSON].(string)); err != nil {
+		if login, err := strconv.Atoi(userMap[constants.ParamUserLoginJSON].(string)); err != nil {
 			return fmt.Errorf("error parsing Login from response: %v", err)
 		} else {
 			u.Login = login
 		}
 	}
 
-	if registration, err := strconv.Atoi(userMap[constants.PARAM_USER_REGISTRATION].(string)); err != nil {
+	if registration, err := strconv.Atoi(userMap[constants.ParamUserRegitration].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
 		u.Registration = registration
 	}
-	if lastAccess, err := strconv.Atoi(userMap[constants.PARAM_USER_LAST_ACCESS].(string)); err != nil {
+	if lastAccess, err := strconv.Atoi(userMap[constants.ParamUserLastAccess].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
 		u.LastAccess = lastAccess
 	}
-	if lastPassChange, err := strconv.Atoi(userMap[constants.PARAM_USER_LAST_PASS_CHANGE].(string)); err != nil {
+	if lastPassChange, err := strconv.Atoi(userMap[constants.ParamUserLastPassChange].(string)); err != nil {
 		return fmt.Errorf("error parsing Registration from response: %v", err)
 	} else {
 		u.LastPassChange = lastPassChange

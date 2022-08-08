@@ -78,10 +78,10 @@ type LastTickStats struct {
 func (m *Client) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 	symbolNames := strings.Join(symbols, ",")
 	cmd := &Command{
-		Command: constants.CMD_TICK_LAST,
+		Command: constants.CmdTickLast,
 		Parameters: map[string]interface{}{
-			constants.PARAM_SYMBOL:        symbolNames,
-			constants.PARAM_TICK_TRANS_ID: id,
+			constants.ParamSymbol:      symbolNames,
+			constants.ParamTickTransID: id,
 		},
 		ResponseHasBody: true,
 	}
@@ -96,7 +96,7 @@ func (m *Client) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 	if err := json.Unmarshal([]byte(res.Data), &ticks); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.ParamTickTransID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
@@ -111,11 +111,11 @@ func (m *Client) GetLastTick(id int, symbols ...string) (*LastTicks, error) {
 func (m *Client) GetLastTickByGroup(id int, group string, symbols ...string) (*LastTicks, error) {
 	symbolNames := strings.Join(symbols, ",")
 	cmd := &Command{
-		Command: constants.CMD_TICK_LAST_BY_GROUP,
+		Command: constants.CmdTickLastByGroup,
 		Parameters: map[string]interface{}{
-			constants.PARAM_SYMBOL:        symbolNames,
-			constants.PARAM_TICK_TRANS_ID: id,
-			constants.PARAM_GROUP:         group,
+			constants.ParamSymbol:      symbolNames,
+			constants.ParamTickTransID: id,
+			constants.ParamGroup:       group,
 		},
 		ResponseHasBody: true,
 	}
@@ -130,7 +130,7 @@ func (m *Client) GetLastTickByGroup(id int, group string, symbols ...string) (*L
 	if err := json.Unmarshal([]byte(res.Data), &ticks); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.ParamTickTransID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
@@ -145,10 +145,10 @@ func (m *Client) GetLastTickByGroup(id int, group string, symbols ...string) (*L
 func (m *Client) GetTickStatistics(id int, symbols ...string) (*LastTickStats, error) {
 	symbolNames := strings.Join(symbols, ",")
 	cmd := &Command{
-		Command: constants.CMD_TICK_STATS,
+		Command: constants.CmdTickStats,
 		Parameters: map[string]interface{}{
-			constants.PARAM_SYMBOL:        symbolNames,
-			constants.PARAM_TICK_TRANS_ID: id,
+			constants.ParamSymbol:      symbolNames,
+			constants.ParamTickTransID: id,
 		},
 		ResponseHasBody: true,
 	}
@@ -163,7 +163,7 @@ func (m *Client) GetTickStatistics(id int, symbols ...string) (*LastTickStats, e
 	if err := json.Unmarshal([]byte(res.Data), &tickStats); err != nil {
 		return nil, fmt.Errorf("error parsing JSON response for last tick: %v", err)
 	}
-	transID := res.Parameters[constants.PARAM_TICK_TRANS_ID].(string)
+	transID := res.Parameters[constants.ParamTickTransID].(string)
 	transactionID, err := strconv.Atoi(transID)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing transaction ID %s of the last tick: %v", transID, err)
